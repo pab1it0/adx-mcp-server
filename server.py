@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 import dotenv
 from mcp.server.fastmcp import FastMCP
-from azure.identity import DefaultAzureCredential, ClientSecretCredential
+from azure.identity import ClientSecretCredential
 from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
 
 # Load environment variables from .env file if it exists
@@ -42,28 +42,23 @@ config = ADXConfig(
 )
 
 def get_kusto_client() -> KustoClient:
-    """Create and return a KustoClient instance based on available credentials"""
+    """Create and return a KustoClient instance using client credentials"""
     
-    # First try client credentials if available
-    if all([config.tenant_id, config.client_id, config.client_secret]):
-        # Use client secret credential with updated API
-        credential = ClientSecretCredential(
-            tenant_id=config.tenant_id,
-            client_id=config.client_id,
-            client_secret=config.client_secret
-        )
-        # Create connection string builder with AAD
-        kcsb = KustoConnectionStringBuilder.with_aad_application_key_authentication(
-            connection_string=config.cluster_url,
-            aad_app_id=config.client_id,
-            app_key=config.client_secret,
-            authority_id=config.tenant_id
-        )
-        return KustoClient(kcsb)
-    
-    # Fall back to default credential chain
-    kcsb = KustoConnectionStringBuilder.with_aad_device_authentication(
-        connection_string=config.cluster_url
+    if not all([config.tenant_id, config.client_id, config.client_secret]):
+        raise ValueError("Client credentials are missing. Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables.")
+        
+    # Use client secret credential
+    credential = ClientSecretCredential(
+        tenant_id=config.tenant_id,
+        client_id=config.client_id,
+        client_secret=config.client_secret
+    )
+    # Create connection string builder with AAD
+    kcsb = KustoConnectionStringBuilder.with_aad_application_key_authentication(
+        connection_string=config.cluster_url,
+        aad_app_id=config.client_id,
+        app_key=config.client_secret,
+        authority_id=config.tenant_id
     )
     return KustoClient(kcsb)
 

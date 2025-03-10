@@ -36,12 +36,13 @@ def setup_environment():
     print(f"  Cluster: {config.cluster_url}")
     print(f"  Database: {config.database}")
     
-    # Authentication method
-    if all([config.tenant_id, config.client_id, config.client_secret]):
-        print("Authentication: Using client credentials")
-    else:
-        print("Authentication: Using default Azure credentials")
-        print("  (Azure CLI, managed identity, or Visual Studio Code)")
+    # Authentication method - only client credentials are supported
+    if not all([config.tenant_id, config.client_id, config.client_secret]):
+        print("ERROR: Client credentials are missing")
+        print("Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables")
+        return False
+        
+    print("Authentication: Using client credentials")
     
     return True
 
