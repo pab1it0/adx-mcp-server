@@ -46,6 +46,8 @@ AZURE_CLIENT_SECRET=your_client_secret
     "adx": {
       "command": "uv",
       "args": [
+        "--directory",
+        "<full path to adx-mcp-server directory>",
         "run",
         "main.py"
       ],
