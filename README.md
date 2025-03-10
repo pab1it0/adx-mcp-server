@@ -98,11 +98,33 @@ adx-mcp-server/
 
 ### Testing
 
+The project includes a comprehensive test suite that ensures functionality and helps prevent regressions.
+
 Run the tests with pytest:
 
 ```bash
-uv run -m pytest
+# Install development dependencies
+uv pip install -e ".[dev]"
+
+# Run the tests
+pytest
+
+# Run with coverage report
+pytest --cov=src --cov-report=term-missing
+
+# Or use the convenience script
+./run_tests.sh
+./run_tests.sh --coverage  # With coverage
 ```
+
+Tests are organized into:
+
+- Configuration validation tests
+- Server functionality tests
+- Error handling tests
+- Main application tests
+
+When adding new features, please also add corresponding tests.
 
 ### Tools
 
