@@ -29,7 +29,7 @@ dev = [
 ]
 
 [project.scripts]
-adx-mcp-server = "adx_mcp_server.main:run_server"
+adx-mcp-server = "adx-mcp-server.main:run_server"
 
 [tool.setuptools]
 packages = ["adx_mcp_server"]
