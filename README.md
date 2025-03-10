@@ -88,7 +88,7 @@ The project has been organized with a `src` directory structure:
 ```
 adx-mcp-server/
 ├── src/
-│   └── adx_mcp_server/
+│   └── adx-mcp-server/
 │       ├── __init__.py      # Package initialization
 │       ├── server.py        # MCP server implementation
 │       ├── main.py          # Main application logic
