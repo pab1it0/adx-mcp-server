@@ -1,23 +1,41 @@
-# Python-generated files
+# Python compiled files
 __pycache__/
-*.py[oc]
-build/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
 dist/
-wheels/
-*.egg-info
+build/
+*.egg-info/
+
+# Unit test / coverage reports
+.pytest_cache/
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
 
 # Virtual environments
-.venv
+.venv/
 venv/
 env/
+ENV/
 
-# Environment configuration
-.env
-
-# IDE files
-.vscode/
+# IDE directories
 .idea/
-*.sublime*
+.vscode/
+*.swp
+*.swo
 
-# Logs
+# Environment files
+.env
+!.env.template
+
+# Log files
 *.log
+
+# Miscellaneous
+.DS_Store
