@@ -49,7 +49,7 @@ AZURE_CLIENT_SECRET=your_client_secret
         "--directory",
         "<full path to adx-mcp-server directory>",
         "run",
-        "main.py"
+        "src/adx-mcp-server/main.py"
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
@@ -81,16 +81,19 @@ source .venv/bin/activate  # On Unix/macOS
 uv pip install -e .
 ```
 
-To run the server in development mode with the MCP Inspector, use:
+## Project Structure
 
-```bash
-uv run -m mcp.cli dev server.py
+The project has been organized with a `src` directory structure:
+
 ```
-
-Or to run the server directly:
-
-```bash
-uv run main.py
+adx-mcp-server/
+├── src/
+│   └── adx_mcp_server/
+│       ├── __init__.py      # Package initialization
+│       ├── server.py        # MCP server implementation
+│       ├── main.py          # Main application logic
+├── pyproject.toml           # Project configuration
+└── README.md                # This file
 ```
 
 ### Testing
