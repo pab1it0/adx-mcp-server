@@ -63,7 +63,7 @@ def format_query_results(result_set) -> List[Dict[str, Any]]:
     
     return formatted_results
 
-@mcp.tool()
+@mcp.tool(description="Executes a Kusto Query Language (KQL) query against the configured Azure Data Explorer database and returns the results as a list of dictionaries.")
 async def execute_query(query: str) -> List[Dict[str, Any]]:
     if not config.cluster_url or not config.database:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
@@ -72,7 +72,7 @@ async def execute_query(query: str) -> List[Dict[str, Any]]:
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
-@mcp.tool()
+@mcp.tool(description="Retrieves a list of all tables available in the configured Azure Data Explorer database, including their names, folders, and database associations.")
 async def list_tables() -> List[Dict[str, Any]]:
     if not config.cluster_url or not config.database:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
@@ -82,7 +82,7 @@ async def list_tables() -> List[Dict[str, Any]]:
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
-@mcp.tool()
+@mcp.tool(description="Retrieves the schema information for a specified table in the Azure Data Explorer database, including column names, data types, and other schema-related metadata.")
 async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
     if not config.cluster_url or not config.database:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
@@ -92,7 +92,7 @@ async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
-@mcp.tool()
+@mcp.tool(description="Retrieves a random sample of rows from the specified table in the Azure Data Explorer database. The sample_size parameter controls how many rows to return (default: 10).")
 async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict[str, Any]]:
     if not config.cluster_url or not config.database:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
