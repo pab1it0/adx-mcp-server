@@ -1,16 +1,24 @@
 [project]
 name = "adx-mcp-server"
 version = "0.1.0"
-description = "MCP server for Azure Data Explorer integration"
+description = "Model Context Protocol (MCP) server for Azure Data Explorer - enabling AI assistants to execute KQL queries and explore your data in Azure Data Explorer clusters"
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [
+    {name = "Pavel Shklovsky", email = "pavel@cloudefined.com"}
+]
 dependencies = [
     "mcp[cli]", # MCP server with CLI support
     "azure-kusto-data", # Azure Data Explorer client
-    "azure-identity", # Azure authentication # Environment variable loading
-    "python-dotenv",
+    "azure-identity", # Azure authentication
+    "python-dotenv", # Environment variable loading
     "pyproject-toml>=0.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/pab1it0/adx-mcp-server"
+"Bug Tracker" = "https://github.com/pab1it0/adx-mcp-server/issues"
+Documentation = "https://github.com/pab1it0/adx-mcp-server#readme"
 
 [project.optional-dependencies]
 dev = [
@@ -21,11 +29,11 @@ dev = [
 ]
 
 [project.scripts]
-adx-mcp-server = "main:run_server"
+adx-mcp-server = "adx_mcp_server.main:run_server"
 
 [tool.setuptools]
-py-modules = ["server", "main"]
-packages = []
+packages = ["adx_mcp_server"]
+package-dir = {"" = "src"}
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -39,7 +47,7 @@ python_classes = "Test*"
 addopts = "--cov=src --cov-report=term-missing"
 
 [tool.coverage.run]
-source = ["src/adx-mcp-server"]
+source = ["src/adx_mcp_server"]
 omit = ["*/__pycache__/*", "*/tests/*", "*/.venv/*", "*/venv/*"]
 
 [tool.coverage.report]
