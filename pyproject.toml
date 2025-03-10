@@ -1,0 +1,24 @@
+[project]
+name = "adx-mcp-server"
+version = "0.1.0"
+description = "MCP server for Azure Data Explorer integration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]", # MCP server with CLI support
+    "azure-kusto-data", # Azure Data Explorer client
+    "azure-identity", # Azure authentication # Environment variable loading
+    "python-dotenv",
+    "pyproject-toml>=0.1.0",
+]
+
+[project.scripts]
+adx-mcp-server = "main:run_server"
+
+[tool.setuptools]
+py-modules = ["server", "main"]
+packages = []
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
