@@ -1,26 +1,14 @@
 #!/usr/bin/env python
-"""
-Azure Data Explorer MCP Server
-----------------------------
-An MCP server for interacting with Azure Data Explorer.
-
-This script initializes and runs the Azure Data Explorer MCP server.
-"""
 import sys
 import dotenv
-
-# Import the MCP server implementation
 from server import mcp, config
 
 def setup_environment():
-    """Setup the environment for the ADX MCP server"""
-    # Load environment variables from .env file
     if dotenv.load_dotenv():
         print("Loaded environment variables from .env file")
     else:
         print("No .env file found or could not load it - using environment variables")
 
-    # Check if the required environment variables are set
     if not config.cluster_url:
         print("ERROR: ADX_CLUSTER_URL environment variable is not set")
         print("Please set it to your Azure Data Explorer cluster URL")
@@ -36,7 +24,6 @@ def setup_environment():
     print(f"  Cluster: {config.cluster_url}")
     print(f"  Database: {config.database}")
     
-    # Authentication method - only client credentials are supported
     if not all([config.tenant_id, config.client_id, config.client_secret]):
         print("ERROR: Client credentials are missing")
         print("Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables")
