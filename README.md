@@ -1,5 +1,9 @@
 # Azure Data Explorer MCP Server
 
+<a href="https://glama.ai/mcp/servers/1yysyd147h">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/1yysyd147h/badge" />
+</a>
+
 A [Model Context Protocol][mcp] (MCP) server for Azure Data Explorer.
 
 This provides access to your Azure Data Explorer clusters and databases through standardized MCP interfaces, allowing AI assistants to execute KQL queries and explore your data.
