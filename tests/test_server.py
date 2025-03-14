@@ -7,8 +7,8 @@ from unittest.mock import patch, MagicMock, AsyncMock
 import asyncio
 
 # Import the modules to test
-import server
-from server import execute_query, list_tables, get_table_schema, sample_table_data
+from adx_mcp_server import server
+from adx_mcp_server.server import execute_query, list_tables, get_table_schema, sample_table_data
 
 class TestServerTools:
     @pytest.mark.asyncio
@@ -19,7 +19,7 @@ class TestServerTools:
         server.config.database = "testdb"
         
         try:
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 # Create mock client and result
                 mock_client = MagicMock()
                 
@@ -72,7 +72,7 @@ class TestServerTools:
         server.config.database = "testdb"
         
         try:
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 # Create mock client and result
                 mock_client = MagicMock()
                 
@@ -124,7 +124,7 @@ class TestServerTools:
         server.config.database = "testdb"
         
         try:
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 # Create mock client and result
                 mock_client = MagicMock()
                 
@@ -178,7 +178,7 @@ class TestServerTools:
         server.config.database = "testdb"
         
         try:
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 # Create mock client and result
                 mock_client = MagicMock()
                 

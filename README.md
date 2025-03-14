@@ -53,7 +53,7 @@ AZURE_CLIENT_SECRET=your_client_secret
         "--directory",
         "<full path to adx-mcp-server directory>",
         "run",
-        "src/adx-mcp-server/main.py"
+        "src/adx_mcp_server/main.py"
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
@@ -116,11 +116,6 @@ pytest
 # Run with coverage report
 pytest --cov=src --cov-report=term-missing
 
-# Or use the convenience script
-./run_tests.sh
-./run_tests.sh --coverage  # With coverage
-```
-
 Tests are organized into:
 
 - Configuration validation tests
@@ -139,39 +134,6 @@ When adding new features, please also add corresponding tests.
 | `get_table_schema` | Discovery | Get the schema for a specific table |
 | `sample_table_data` | Discovery | Get sample data from a table with optional sample size |
 
-## Example Usage
-
-Here's how an AI assistant might use this MCP server to interact with your Azure Data Explorer instance:
-
-```
-User: I need to analyze some data in Azure Data Explorer. Can you help me?
-
-AI: I can help you analyze data in Azure Data Explorer. Let me first check what tables are available in your database.
-[AI uses the list_tables tool]
-
-AI: I found several tables in your database. Here are the available tables:
-- logs
-- metrics
-- users
-- events
-
-What kind of analysis would you like to perform?
-
-User: I want to see if there were any errors in the logs in the last 24 hours.
-
-AI: I'll query the logs table for errors in the last 24 hours.
-[AI uses the execute_query tool with:
-  "logs | where Timestamp > ago(24h) and Level == 'Error' | summarize count() by Source"]
-
-AI: Here are the error counts by source from the last 24 hours:
-| Source      | count |
-|-------------|-------|
-| WebService  | 42    |
-| DataProcessor| 17   |
-| API         | 5     |
-
-Would you like me to investigate any of these error sources in more detail?
-```
 
 ## License
 

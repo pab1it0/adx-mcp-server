@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import dotenv
-from server import mcp, config
+from adx_mcp_server.server import mcp, config
 
 def setup_environment():
     if dotenv.load_dotenv():
@@ -33,7 +33,7 @@ def setup_environment():
     
     return True
 
-def main():
+def run_server():
     """Main entry point for the Azure Data Explorer MCP Server"""
     # Setup environment
     if not setup_environment():
@@ -46,4 +46,4 @@ def main():
     mcp.run(transport="stdio")
 
 if __name__ == "__main__":
-    main()
+    run_server()

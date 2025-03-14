@@ -3,14 +3,14 @@
 import pytest
 import json
 from unittest.mock import patch, MagicMock
-import server
-from server import execute_query
+from adx_mcp_server import server
+from adx_mcp_server.server import execute_query
 
 class TestWithMockData:
     @pytest.fixture
     def mock_kusto_real_data(self):
         """Create mock Kusto responses with realistic data."""
-        with patch('server.get_kusto_client') as mock_get_client:
+        with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
             mock_client = MagicMock()
             
             # Create a sample log data that looks like real data

@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import patch, MagicMock
-import server
-from server import execute_query, list_tables, get_table_schema, sample_table_data
+from adx_mcp_server import server
+from adx_mcp_server.server import execute_query, list_tables, get_table_schema, sample_table_data
 
 class TestErrorHandling:
     @pytest.mark.asyncio
@@ -27,7 +27,7 @@ class TestErrorHandling:
             error_message = "Kusto client error"
             
             # Mock the KustoClient to raise an exception
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 mock_client = MagicMock()
                 mock_client.execute.side_effect = Exception(error_message)
                 mock_get_client.return_value = mock_client
@@ -78,7 +78,7 @@ class TestErrorHandling:
             server.config.client_secret = "test-client-secret"
             
             # Mock the KustoClient to return malformed results
-            with patch('server.get_kusto_client') as mock_get_client:
+            with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
                 mock_client = MagicMock()
                 
                 # Create a malformed result with missing elements
