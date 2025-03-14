@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import MagicMock
-from server import format_query_results
+from adx_mcp_server.server import format_query_results
 
 class TestResultFormatting:
     def test_format_complex_results(self):

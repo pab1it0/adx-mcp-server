@@ -8,7 +8,7 @@ from unittest.mock import patch, MagicMock
 from io import StringIO
 
 # Import the module to test
-from main import setup_environment
+from adx_mcp_server.main import setup_environment
 
 class TestMain:
     def test_setup_environment_success(self, monkeypatch, capsys):
@@ -21,7 +21,7 @@ class TestMain:
         monkeypatch.setenv("AZURE_CLIENT_SECRET", "test-client-secret")
         
         # Update config in the main module directly
-        from server import config
+        from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
         config.tenant_id = "test-tenant-id"
@@ -49,7 +49,7 @@ class TestMain:
         monkeypatch.delenv("ADX_CLUSTER_URL", raising=False)
         
         # Update config directly
-        from server import config
+        from adx_mcp_server.server import config
         config.cluster_url = ""
         config.database = "testdb"
         config.tenant_id = "test-tenant-id"
@@ -81,7 +81,7 @@ class TestMain:
         monkeypatch.delenv("ADX_DATABASE", raising=False)
         
         # Update config directly
-        from server import config
+        from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = ""
         config.tenant_id = "test-tenant-id"
@@ -116,7 +116,7 @@ class TestMain:
         monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
         
         # Update config directly
-        from server import config
+        from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
         config.tenant_id = ""
@@ -144,19 +144,19 @@ class TestMain:
     def test_main_function_success(self):
         """Test the main function with successful setup."""
         # Important: Import main after patching
-        with patch('main.setup_environment') as mock_setup:
+        with patch('adx_mcp_server.main.setup_environment') as mock_setup:
             # Set the return value for setup_environment
             mock_setup.return_value = True
             
             # Patch sys.exit to prevent actual exits
             with patch('sys.exit') as mock_exit:
                 # Patch server.mcp.run to prevent actual runs
-                with patch('server.mcp.run') as mock_run:
+                with patch('adx_mcp_server.server.mcp.run') as mock_run:
                     # Now we need to import main for the test
-                    from main import main
+                    from adx_mcp_server.main import run_server
                     
                     # Call the function
-                    main()
+                    run_server()
                     
                     # Verify setup_environment was called
                     mock_setup.assert_called_once()

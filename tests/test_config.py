@@ -2,7 +2,7 @@
 
 import pytest
 import os
-from server import config, ADXConfig
+from adx_mcp_server.server import config, ADXConfig
 
 class TestConfig:
     def test_config_initialization(self, monkeypatch):
