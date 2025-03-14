@@ -115,7 +115,7 @@ pytest
 
 # Run with coverage report
 pytest --cov=src --cov-report=term-missing
-
+```
 Tests are organized into:
 
 - Configuration validation tests
