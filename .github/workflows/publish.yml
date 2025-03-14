@@ -23,7 +23,7 @@ jobs:
 
       - name: Install build dependencies with uv
         run: |
-          uv pip install build twine
+          uv pip install --system build twine
 
       - name: Build package
         run: |
