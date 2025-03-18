@@ -1,0 +1,50 @@
+# Version control
+.git
+.gitignore
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Local development settings
+.env
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker specific
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Documentation
+docs/
+*.md
+LICENSE
+
+# Other
+.DS_Store
+*.log
