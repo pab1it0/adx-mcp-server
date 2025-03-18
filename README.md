@@ -19,6 +19,7 @@ This provides access to your Azure Data Explorer clusters and databases through 
   - [x] Sample data from tables
 - [x] Authentication support
   - [x] Client credentials from environment variables
+- [x] Docker containerization support
 
 - [x] Provide interactive tools for AI assistants
 
@@ -66,6 +67,67 @@ AZURE_CLIENT_SECRET=your_client_secret
 
 > Note: if you see `Error: spawn uv ENOENT` in Claude Desktop, you may need to specify the full path to `uv` or set the environment variable `NO_UV=1` in the configuration.
 
+## Docker Usage
+
+This project includes Docker support for easy deployment and isolation.
+
+### Building the Docker Image
+
+Build the Docker image using:
+
+```bash
+docker build -t adx-mcp-server .
+```
+
+### Running with Docker
+
+You can run the server using Docker in several ways:
+
+#### Using docker run directly:
+
+```bash
+docker run -it --rm \
+  -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
+  -e ADX_DATABASE=your_database \
+  -e AZURE_TENANT_ID=your_tenant_id \
+  -e AZURE_CLIENT_ID=your_client_id \
+  -e AZURE_CLIENT_SECRET=your_client_secret \
+  adx-mcp-server
+```
+
+#### Using docker-compose:
+
+Create a `.env` file with your Azure Data Explorer credentials and then run:
+
+```bash
+docker-compose up
+```
+
+### Running with Docker in Claude Desktop
+
+To use the containerized server with Claude Desktop, update the configuration to use Docker:
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e", "ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net",
+        "-e", "ADX_DATABASE=your_database",
+        "-e", "AZURE_TENANT_ID=your_tenant_id",
+        "-e", "AZURE_CLIENT_ID=your_client_id",
+        "-e", "AZURE_CLIENT_SECRET=your_client_secret",
+        "adx-mcp-server"
+      ]
+    }
+  }
+}
+```
+
 ## Development
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
@@ -96,6 +158,9 @@ adx-mcp-server/
 │       ├── __init__.py      # Package initialization
 │       ├── server.py        # MCP server implementation
 │       ├── main.py          # Main application logic
+├── Dockerfile               # Docker configuration
+├── docker-compose.yml       # Docker Compose configuration
+├── .dockerignore            # Docker ignore file
 ├── pyproject.toml           # Project configuration
 └── README.md                # This file
 ```
