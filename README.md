@@ -108,32 +108,7 @@ docker-compose up
 
 ### Running with Docker in Claude Desktop
 
-To use the containerized server with Claude Desktop, update the configuration to use Docker. There are two ways to provide the environment variables:
-
-#### Method 1: Using -e flags in args (recommended for security):
-
-```json
-{
-  "mcpServers": {
-    "adx": {
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "-i",
-        "-e", "ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net",
-        "-e", "ADX_DATABASE=your_database",
-        "-e", "AZURE_TENANT_ID=your_tenant_id",
-        "-e", "AZURE_CLIENT_ID=your_client_id",
-        "-e", "AZURE_CLIENT_SECRET=your_client_secret",
-        "adx-mcp-server"
-      ]
-    }
-  }
-}
-```
-
-#### Method 2: Using Claude's env object with Docker's -e flags:
+To use the containerized server with Claude Desktop, update the configuration to use Docker with the environment variables:
 
 ```json
 {
@@ -162,6 +137,8 @@ To use the containerized server with Claude Desktop, update the configuration to
   }
 }
 ```
+
+This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
 
 ## Development
 
