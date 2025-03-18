@@ -13,6 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     python3-dev \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the project files
@@ -27,8 +28,11 @@ RUN uv venv /app/.venv && \
     . /app/.venv/bin/activate && \
     uv pip install -e .
 
+# Make the entrypoint script executable
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Set the entrypoint
-ENTRYPOINT ["/app/.venv/bin/python", "-m", "adx_mcp_server.main"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # Label the image
 LABEL maintainer="pab1it0" \
