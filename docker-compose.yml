@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  adx-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    environment:
+      - ADX_CLUSTER_URL=${ADX_CLUSTER_URL}
+      - ADX_DATABASE=${ADX_DATABASE}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+    stdin_open: true  # Keep STDIN open even if not attached
+    tty: true        # Allocate a pseudo-TTY
+    # For debugging/interactive use only - normally the MCP server runs with stdio transport

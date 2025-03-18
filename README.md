@@ -19,6 +19,7 @@ This provides access to your Azure Data Explorer clusters and databases through 
   - [x] Sample data from tables
 - [x] Authentication support
   - [x] Client credentials from environment variables
+- [x] Docker containerization support
 
 - [x] Provide interactive tools for AI assistants
 
@@ -36,7 +37,7 @@ This is useful if you don't use certain functionality or if you don't want to ta
 ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net
 ADX_DATABASE=your_database
 
-# Optional: Azure authentication (if not using default credentials)
+# Required: Azure authentication credentials
 AZURE_TENANT_ID=your_tenant_id
 AZURE_CLIENT_ID=your_client_id
 AZURE_CLIENT_SECRET=your_client_secret
@@ -57,7 +58,10 @@ AZURE_CLIENT_SECRET=your_client_secret
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
-        "ADX_DATABASE": "your_database"
+        "ADX_DATABASE": "your_database",
+        "AZURE_TENANT_ID": "your_tenant_id",
+        "AZURE_CLIENT_ID": "your_client_id",
+        "AZURE_CLIENT_SECRET": "your_client_secret"
       }
     }
   }
@@ -65,6 +69,99 @@ AZURE_CLIENT_SECRET=your_client_secret
 ```
 
 > Note: if you see `Error: spawn uv ENOENT` in Claude Desktop, you may need to specify the full path to `uv` or set the environment variable `NO_UV=1` in the configuration.
+
+## Docker Usage
+
+This project includes Docker support for easy deployment and isolation.
+
+### Building the Docker Image
+
+Build the Docker image using:
+
+```bash
+docker build -t adx-mcp-server .
+```
+
+### Running with Docker
+
+You can run the server using Docker in several ways:
+
+#### Using docker run directly:
+
+```bash
+docker run -it --rm \
+  -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
+  -e ADX_DATABASE=your_database \
+  -e AZURE_TENANT_ID=your_tenant_id \
+  -e AZURE_CLIENT_ID=your_client_id \
+  -e AZURE_CLIENT_SECRET=your_client_secret \
+  adx-mcp-server
+```
+
+#### Using docker-compose:
+
+Create a `.env` file with your Azure Data Explorer credentials and then run:
+
+```bash
+docker-compose up
+```
+
+### Running with Docker in Claude Desktop
+
+To use the containerized server with Claude Desktop, update the configuration to use Docker. There are two ways to provide the environment variables:
+
+#### Method 1: Using -e flags in args (recommended for security):
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e", "ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net",
+        "-e", "ADX_DATABASE=your_database",
+        "-e", "AZURE_TENANT_ID=your_tenant_id",
+        "-e", "AZURE_CLIENT_ID=your_client_id",
+        "-e", "AZURE_CLIENT_SECRET=your_client_secret",
+        "adx-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+#### Method 2: Using Claude's env object with Docker's -e flags:
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e", "ADX_CLUSTER_URL",
+        "-e", "ADX_DATABASE",
+        "-e", "AZURE_TENANT_ID",
+        "-e", "AZURE_CLIENT_ID",
+        "-e", "AZURE_CLIENT_SECRET",
+        "adx-mcp-server"
+      ],
+      "env": {
+        "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
+        "ADX_DATABASE": "your_database",
+        "AZURE_TENANT_ID": "your_tenant_id",
+        "AZURE_CLIENT_ID": "your_client_id",
+        "AZURE_CLIENT_SECRET": "your_client_secret"
+      }
+    }
+  }
+}
+```
 
 ## Development
 
@@ -96,6 +193,9 @@ adx-mcp-server/
 │       ├── __init__.py      # Package initialization
 │       ├── server.py        # MCP server implementation
 │       ├── main.py          # Main application logic
+├── Dockerfile               # Docker configuration
+├── docker-compose.yml       # Docker Compose configuration
+├── .dockerignore            # Docker ignore file
 ├── pyproject.toml           # Project configuration
 └── README.md                # This file
 ```
