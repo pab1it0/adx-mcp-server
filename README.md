@@ -37,7 +37,7 @@ This is useful if you don't use certain functionality or if you don't want to ta
 ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net
 ADX_DATABASE=your_database
 
-# Optional: Azure authentication (if not using default credentials)
+# Required: Azure authentication credentials
 AZURE_TENANT_ID=your_tenant_id
 AZURE_CLIENT_ID=your_client_id
 AZURE_CLIENT_SECRET=your_client_secret
@@ -58,7 +58,10 @@ AZURE_CLIENT_SECRET=your_client_secret
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
-        "ADX_DATABASE": "your_database"
+        "ADX_DATABASE": "your_database",
+        "AZURE_TENANT_ID": "your_tenant_id",
+        "AZURE_CLIENT_ID": "your_client_id",
+        "AZURE_CLIENT_SECRET": "your_client_secret"
       }
     }
   }
