@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 import dotenv
 from mcp.server.fastmcp import FastMCP
-from azure.identity import ClientSecretCredential
+from azure.identity import DefaultAzureCredential
 from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
 
 dotenv.load_dotenv()
@@ -17,33 +17,17 @@ mcp = FastMCP("Azure Data Explorer MCP")
 class ADXConfig:
     cluster_url: str
     database: str
-    # Optional credentials
-    tenant_id: Optional[str] = None
-    client_id: Optional[str] = None
-    client_secret: Optional[str] = None
 
 config = ADXConfig(
     cluster_url=os.environ.get("ADX_CLUSTER_URL", ""),
     database=os.environ.get("ADX_DATABASE", ""),
-    tenant_id=os.environ.get("AZURE_TENANT_ID", ""),
-    client_id=os.environ.get("AZURE_CLIENT_ID", ""),
-    client_secret=os.environ.get("AZURE_CLIENT_SECRET", ""),
 )
 
 def get_kusto_client() -> KustoClient:
-    if not all([config.tenant_id, config.client_id, config.client_secret]):
-        raise ValueError("Client credentials are missing. Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables.")
-
-    credential = ClientSecretCredential(
-        tenant_id=config.tenant_id,
-        client_id=config.client_id,
-        client_secret=config.client_secret
-    )
-    kcsb = KustoConnectionStringBuilder.with_aad_application_key_authentication(
+    credential = DefaultAzureCredential()
+    kcsb = KustoConnectionStringBuilder.with_azure_token_credential(
         connection_string=config.cluster_url,
-        aad_app_id=config.client_id,
-        app_key=config.client_secret,
-        authority_id=config.tenant_id
+        credential=credential
     )
     return KustoClient(kcsb)
 
@@ -88,7 +72,7 @@ async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
     
     client = get_kusto_client()
-    query = f".show table {table_name} | getschema"
+    query = f".show table {table_name}"
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
@@ -103,5 +87,5 @@ async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict
     return format_query_results(result_set)
 
 if __name__ == "__main__":
-    print(f"Starting Azure Data Explorer MCP Server...")
+    # print(f"Starting Azure Data Explorer MCP Server...")
     mcp.run()
