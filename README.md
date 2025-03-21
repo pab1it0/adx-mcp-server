@@ -18,7 +18,7 @@ This provides access to your Azure Data Explorer clusters and databases through 
   - [x] View table schemas
   - [x] Sample data from tables
 - [x] Authentication support
-  - [x] Client credentials from environment variables
+  - [x] Token credential support (Azure CLI, MSI, etc.)
 - [x] Docker containerization support
 
 - [x] Provide interactive tools for AI assistants
@@ -28,7 +28,7 @@ This is useful if you don't use certain functionality or if you don't want to ta
 
 ## Usage
 
-1. Create a service account in Azure Data Explorer with appropriate permissions, or ensure you have access through your Azure account.
+1. Login to your Azure account which has the permission to the ADX cluster using Azure CLI.
 
 2. Configure the environment variables for your ADX cluster, either through a `.env` file or system environment variables:
 
@@ -36,11 +36,6 @@ This is useful if you don't use certain functionality or if you don't want to ta
 # Required: Azure Data Explorer configuration
 ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net
 ADX_DATABASE=your_database
-
-# Required: Azure authentication credentials
-AZURE_TENANT_ID=your_tenant_id
-AZURE_CLIENT_ID=your_client_id
-AZURE_CLIENT_SECRET=your_client_secret
 ```
 
 3. Add the server configuration to your client configuration file. For example, for Claude Desktop:
@@ -58,10 +53,7 @@ AZURE_CLIENT_SECRET=your_client_secret
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
-        "ADX_DATABASE": "your_database",
-        "AZURE_TENANT_ID": "your_tenant_id",
-        "AZURE_CLIENT_ID": "your_client_id",
-        "AZURE_CLIENT_SECRET": "your_client_secret"
+        "ADX_DATABASE": "your_database"
       }
     }
   }
@@ -92,9 +84,6 @@ You can run the server using Docker in several ways:
 docker run -it --rm \
   -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
   -e ADX_DATABASE=your_database \
-  -e AZURE_TENANT_ID=your_tenant_id \
-  -e AZURE_CLIENT_ID=your_client_id \
-  -e AZURE_CLIENT_SECRET=your_client_secret \
   adx-mcp-server
 ```
 
@@ -121,17 +110,11 @@ To use the containerized server with Claude Desktop, update the configuration to
         "-i",
         "-e", "ADX_CLUSTER_URL",
         "-e", "ADX_DATABASE",
-        "-e", "AZURE_TENANT_ID",
-        "-e", "AZURE_CLIENT_ID",
-        "-e", "AZURE_CLIENT_SECRET",
         "adx-mcp-server"
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
-        "ADX_DATABASE": "your_database",
-        "AZURE_TENANT_ID": "your_tenant_id",
-        "AZURE_CLIENT_ID": "your_client_id",
-        "AZURE_CLIENT_SECRET": "your_client_secret"
+        "ADX_DATABASE": "your_database"
       }
     }
   }
