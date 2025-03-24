@@ -12,17 +12,11 @@ class TestErrorHandling:
         # Save original config values
         original_cluster = server.config.cluster_url
         original_database = server.config.database
-        original_tenant_id = server.config.tenant_id
-        original_client_id = server.config.client_id
-        original_client_secret = server.config.client_secret
         
         try:
             # Set test configuration
             server.config.cluster_url = "https://testcluster.region.kusto.windows.net"
             server.config.database = "testdb"
-            server.config.tenant_id = "test-tenant-id"
-            server.config.client_id = "test-client-id"
-            server.config.client_secret = "test-client-secret"
             
             error_message = "Kusto client error"
             
@@ -55,9 +49,6 @@ class TestErrorHandling:
             # Restore original config
             server.config.cluster_url = original_cluster
             server.config.database = original_database
-            server.config.tenant_id = original_tenant_id
-            server.config.client_id = original_client_id
-            server.config.client_secret = original_client_secret
     
     @pytest.mark.asyncio
     async def test_malformed_result_set(self, monkeypatch):
@@ -65,17 +56,11 @@ class TestErrorHandling:
         # Save original config values
         original_cluster = server.config.cluster_url
         original_database = server.config.database
-        original_tenant_id = server.config.tenant_id
-        original_client_id = server.config.client_id
-        original_client_secret = server.config.client_secret
         
         try:
             # Set test configuration
             server.config.cluster_url = "https://testcluster.region.kusto.windows.net"
             server.config.database = "testdb"
-            server.config.tenant_id = "test-tenant-id"
-            server.config.client_id = "test-client-id"
-            server.config.client_secret = "test-client-secret"
             
             # Mock the KustoClient to return malformed results
             with patch('adx_mcp_server.server.get_kusto_client') as mock_get_client:
@@ -96,6 +81,3 @@ class TestErrorHandling:
             # Restore original config
             server.config.cluster_url = original_cluster
             server.config.database = original_database
-            server.config.tenant_id = original_tenant_id
-            server.config.client_id = original_client_id
-            server.config.client_secret = original_client_secret
