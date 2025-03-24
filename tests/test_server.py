@@ -247,32 +247,37 @@ class TestServerTools:
             server.config.database = original_database
     
     @pytest.mark.asyncio
-    async def test_client_credential_error(self, monkeypatch):
-        """Test that get_kusto_client handles missing credentials."""
-        # Save original values
-        original_tenant_id = server.config.tenant_id
-        original_client_id = server.config.client_id
-        original_client_secret = server.config.client_secret
+    @patch('adx_mcp_server.server.DefaultAzureCredential')
+    @patch('adx_mcp_server.server.KustoConnectionStringBuilder.with_azure_token_credential')
+    async def test_token_credential_error(self, mock_kcsb, mock_credential, monkeypatch):
+        """Test that get_kusto_client handles token credential errors."""
+        # Make sure we have valid cluster and database 
+        original_cluster_url = server.config.cluster_url
+        original_database = server.config.database
         
         try:
-            # Make sure we have valid cluster and database 
             server.config.cluster_url = "https://testcluster.region.kusto.windows.net"
             server.config.database = "testdb"
             
-            # Set missing credentials
-            server.config.tenant_id = None
-            server.config.client_id = "test-client-id"
-            server.config.client_secret = "test-client-secret"
+            # Set up the mocks to simulate a token credential error
+            mock_credential.side_effect = Exception("Token credential error")
             
-            with pytest.raises(ValueError) as excinfo:
+            with pytest.raises(Exception) as excinfo:
                 await execute_query("test query")
             
-            assert "Client credentials are missing" in str(excinfo.value)
+            # Verify the error was from the credential
+            assert "Token credential error" in str(excinfo.value)
+            
+            # Verify DefaultAzureCredential was attempted
+            mock_credential.assert_called_once()
+            
+            # Verify KustoConnectionStringBuilder.with_azure_token_credential was NOT called
+            # since the credential creation failed
+            mock_kcsb.assert_not_called()
         finally:
             # Restore original values
-            server.config.tenant_id = original_tenant_id
-            server.config.client_id = original_client_id
-            server.config.client_secret = original_client_secret
+            server.config.cluster_url = original_cluster_url
+            server.config.database = original_database
     
     def test_format_query_results_empty(self):
         """Test that format_query_results handles empty results."""
