@@ -32,17 +32,13 @@ COPY --from=uv --chown=app:app /app/.venv /app/.venv
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy the entrypoint script
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-
 # Set environment variables for ADX MCP Server
 ENV PYTHONUNBUFFERED=1
 
-# Use the entrypoint script
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# when running the container, add ADX_CLUSTER_URL and ADX_DATABASE environment variables
+ENTRYPOINT ["adx-mcp-server"]
 
 # Label the image
 LABEL maintainer="pab1it0" \
       description="Azure Data Explorer MCP Server" \
-      version="1.0.0"
+      version="1.0.5"
