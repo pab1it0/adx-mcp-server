@@ -34,6 +34,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Set environment variables for ADX MCP Server
 ENV PYTHONUNBUFFERED=1
+ENV DOCKER_CONTAINER=1
 
 # when running the container, add ADX_CLUSTER_URL and ADX_DATABASE environment variables
 ENTRYPOINT ["adx-mcp-server"]

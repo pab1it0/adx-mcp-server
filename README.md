@@ -110,7 +110,7 @@ To use the containerized server with Claude Desktop, update the configuration to
         "-i",
         "-e", "ADX_CLUSTER_URL",
         "-e", "ADX_DATABASE",
-        "adx-mcp-server"
+        "pab1it0/adx-mcp-server"
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",

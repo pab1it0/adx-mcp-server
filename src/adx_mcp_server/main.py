@@ -1,42 +1,46 @@
 #!/usr/bin/env python
 import sys
 import dotenv
+import logging
 from adx_mcp_server.server import mcp, config
+import os
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [adx] [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(stream=sys.stderr)]  # Log to stderr instead of stdout
+)
+logger = logging.getLogger("adx")
 
 def setup_environment():
-    if dotenv.load_dotenv():
-        print("Loaded environment variables from .env file")
-    else:
-        print("No .env file found or could not load it - using environment variables")
-
+    # Check if required env vars are already set before trying to load .env
+    if not os.environ.get("ADX_CLUSTER_URL") or not os.environ.get("ADX_DATABASE"):
+        # Only try to load .env if needed
+        dotenv.load_dotenv(verbose=False)
+    
     if not config.cluster_url:
-        print("ERROR: ADX_CLUSTER_URL environment variable is not set")
-        print("Please set it to your Azure Data Explorer cluster URL")
-        print("Example: https://youradxcluster.region.kusto.windows.net")
+        logger.error("ADX_CLUSTER_URL environment variable is not set")
+        logger.error("Please set it to your Azure Data Explorer cluster URL")
+        logger.error("Example: https://youradxcluster.region.kusto.windows.net")
         return False
     
     if not config.database:
-        print("ERROR: ADX_DATABASE environment variable is not set")
-        print("Please set it to your Azure Data Explorer database name")
+        logger.error("ADX_DATABASE environment variable is not set")
+        logger.error("Please set it to your Azure Data Explorer database name")
         return False
 
-    print(f"Azure Data Explorer configuration:")
-    print(f"  Cluster: {config.cluster_url}")
-    print(f"  Database: {config.database}")
-    print(f"  Authentication: Using DefaultAzureCredential")
+    logger.info(f"Azure Data Explorer configuration: Cluster: {config.cluster_url}, Database: {config.database}, Auth: DefaultAzureCredential")
     
     return True
 
 def run_server():
     """Main entry point for the Azure Data Explorer MCP Server"""
-    # Setup environment
     if not setup_environment():
         sys.exit(1)
     
-    print("\nStarting Azure Data Explorer MCP Server...")
-    print("Running server in standard mode...")
+    logger.info("Starting Azure Data Explorer MCP Server...")
     
-    # Run the server with the stdio transport
     mcp.run(transport="stdio")
 
 if __name__ == "__main__":
