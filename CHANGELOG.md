@@ -3,6 +3,9 @@
 ## 1.0.3 (2025-03-25)
 
 * Version bump for new release
+* Switched to DefaultAzureCredential for authentication
+* Removed client credential requirements from code and environment variables
+* Updated tests to support token-based authentication
 * Based on improvements from v1.0.2
 
 ## 1.0.2 (2025-03-24)
