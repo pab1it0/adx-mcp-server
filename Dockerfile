@@ -1,43 +1,44 @@
-FROM python:3.10-slim
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv
 
-# Set working directory
+# Install the project into `/app`
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
 
-# Copy the project files
-COPY . /app/
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev --no-editable
 
-# Install uv
-RUN pip install --upgrade pip && \
-    pip install uv
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-editable
 
-# Create a virtual environment, install dependencies
-RUN uv venv /app/.venv && \
-    . /app/.venv/bin/activate && \
-    uv pip install -e .
+FROM python:3.12-slim-bookworm
 
-# Make the entrypoint script executable
-RUN chmod +x /app/docker-entrypoint.sh
+WORKDIR /app
+ 
+COPY --from=uv /root/.local /root/.local
+COPY --from=uv --chown=app:app /app/.venv /app/.venv
 
-# Set the entrypoint
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Set environment variables for ADX MCP Server
+ENV PYTHONUNBUFFERED=1
+
+# when running the container, add ADX_CLUSTER_URL and ADX_DATABASE environment variables
+ENTRYPOINT ["adx-mcp-server"]
 
 # Label the image
 LABEL maintainer="pab1it0" \
       description="Azure Data Explorer MCP Server" \
-      version="1.0.0"
-
-# Expose port if needed (but this is optional as the MCP server typically runs on stdio)
-# EXPOSE 8000
+      version="1.0.5"
