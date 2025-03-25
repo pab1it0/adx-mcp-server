@@ -23,13 +23,7 @@ def setup_environment():
     print(f"Azure Data Explorer configuration:")
     print(f"  Cluster: {config.cluster_url}")
     print(f"  Database: {config.database}")
-    
-    if not all([config.tenant_id, config.client_id, config.client_secret]):
-        print("ERROR: Client credentials are missing")
-        print("Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment variables")
-        return False
-        
-    print("Authentication: Using client credentials")
+    print(f"  Authentication: Using DefaultAzureCredential")
     
     return True
 

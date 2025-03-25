@@ -16,17 +16,11 @@ class TestMain:
         # Set up environment variables for this specific test
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
-        monkeypatch.setenv("AZURE_TENANT_ID", "test-tenant-id")
-        monkeypatch.setenv("AZURE_CLIENT_ID", "test-client-id")
-        monkeypatch.setenv("AZURE_CLIENT_SECRET", "test-client-secret")
         
         # Update config in the main module directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
-        config.tenant_id = "test-tenant-id"
-        config.client_id = "test-client-id"
-        config.client_secret = "test-client-secret"
         
         with patch('dotenv.load_dotenv', return_value=False):
             result = setup_environment()
@@ -40,7 +34,7 @@ class TestMain:
             assert "Azure Data Explorer configuration:" in captured.out
             assert "Cluster: https://testcluster.region.kusto.windows.net" in captured.out
             assert "Database: testdb" in captured.out
-            assert "Authentication: Using client credentials" in captured.out
+            assert "Authentication: Using DefaultAzureCredential" in captured.out
     
     def test_setup_environment_missing_cluster(self, monkeypatch, capsys):
         """Test setup_environment with missing cluster URL."""
@@ -52,18 +46,12 @@ class TestMain:
         from adx_mcp_server.server import config
         config.cluster_url = ""
         config.database = "testdb"
-        config.tenant_id = "test-tenant-id"
-        config.client_id = "test-client-id"
-        config.client_secret = "test-client-secret"
         
         with patch('dotenv.load_dotenv', return_value=False):
             # Patch the os.environ.get to return our values
             with patch('os.environ.get', side_effect=lambda key, default: {
                 "ADX_CLUSTER_URL": "", 
-                "ADX_DATABASE": "testdb",
-                "AZURE_TENANT_ID": "test-tenant-id",
-                "AZURE_CLIENT_ID": "test-client-id",
-                "AZURE_CLIENT_SECRET": "test-client-secret"
+                "ADX_DATABASE": "testdb"
             }.get(key, default)):
                 result = setup_environment()
                 
@@ -84,18 +72,12 @@ class TestMain:
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = ""
-        config.tenant_id = "test-tenant-id"
-        config.client_id = "test-client-id"
-        config.client_secret = "test-client-secret"
         
         with patch('dotenv.load_dotenv', return_value=False):
             # Patch the os.environ.get to return our values
             with patch('os.environ.get', side_effect=lambda key, default: {
                 "ADX_CLUSTER_URL": "https://testcluster.region.kusto.windows.net", 
                 "ADX_DATABASE": "",
-                "AZURE_TENANT_ID": "test-tenant-id",
-                "AZURE_CLIENT_ID": "test-client-id",
-                "AZURE_CLIENT_SECRET": "test-client-secret"
             }.get(key, default)):
                 result = setup_environment()
                 
@@ -111,35 +93,25 @@ class TestMain:
         # Set up minimal environment but remove credentials
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
-        monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
-        monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
-        monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
+
         
         # Update config directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
-        config.tenant_id = ""
-        config.client_id = ""
-        config.client_secret = ""
         
         with patch('dotenv.load_dotenv', return_value=False):
             # Patch the os.environ.get to return our values
             with patch('os.environ.get', side_effect=lambda key, default: {
                 "ADX_CLUSTER_URL": "https://testcluster.region.kusto.windows.net", 
                 "ADX_DATABASE": "testdb",
-                "AZURE_TENANT_ID": "",
-                "AZURE_CLIENT_ID": "",
-                "AZURE_CLIENT_SECRET": ""
+
             }.get(key, default)):
                 result = setup_environment()
-                
-                # Check the function's return value
-                assert result is False
+                assert result is True
             
-            # Check the output messages
             captured = capsys.readouterr()
-            assert "ERROR: Client credentials are missing" in captured.out
+            assert "Authentication: Using DefaultAzureCredential" in captured.out
     
     def test_main_function_success(self):
         """Test the main function with successful setup."""
