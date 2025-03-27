@@ -1,0 +1,32 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - adxClusterUrl
+      - adxDatabase
+    properties:
+      adxClusterUrl:
+        type: string
+        description: The URL of the Azure Data Explorer cluster, e.g.,
+          https://yourcluster.region.kusto.windows.net
+      adxDatabase:
+        type: string
+        description: The name of the Azure Data Explorer database to connect to
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'adx-mcp-server',
+      args: [],
+      env: {
+        ADX_CLUSTER_URL: config.adxClusterUrl,
+        ADX_DATABASE: config.adxDatabase
+      }
+    })
+  exampleConfig:
+    adxClusterUrl: https://examplecluster.region.kusto.windows.net
+    adxDatabase: example_database
