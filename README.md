@@ -3,7 +3,6 @@
 <a href="https://glama.ai/mcp/servers/1yysyd147h">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/1yysyd147h/badge" />
 </a>
-[![smithery badge](https://smithery.ai/badge/@pab1it0/adx)](https://smithery.ai/server/@pab1it0/adx)
 
 A [Model Context Protocol][mcp] (MCP) server for Azure Data Explorer.
 
