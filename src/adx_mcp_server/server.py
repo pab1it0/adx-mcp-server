@@ -10,7 +10,9 @@ from mcp.server.fastmcp import FastMCP
 from azure.identity import DefaultAzureCredential
 from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
 
-dotenv.load_dotenv()
+if not os.environ.get("ADX_CLUSTER_URL") or not os.environ.get("ADX_DATABASE"):
+    dotenv.load_dotenv(verbose=False)
+
 mcp = FastMCP("Azure Data Explorer MCP")
 
 @dataclass
@@ -87,5 +89,11 @@ async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict
     return format_query_results(result_set)
 
 if __name__ == "__main__":
-    print(f"Starting Azure Data Explorer MCP Server...")
+    import logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [adx] [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler(stream=sys.stderr)]
+    )
+    logging.getLogger("adx").info("Starting Azure Data Explorer MCP Server...")
     mcp.run()
