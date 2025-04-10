@@ -1,0 +1,54 @@
+{
+    "name": "Azure Data Explorer MCP Server",
+    "id": "adx-mcp-server",
+    "version": "1.0.0",
+    "description": "Sets up the environment for the Azure Data Explorer Model Context Protocol server",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of the ADX MCP server to install (defaults to latest)"
+        },
+        "adxClusterUrl": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Data Explorer cluster URL (empty by default, must be specified at runtime)"
+        },
+        "adxDatabase": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
+        },
+        "installDependencies": {
+            "type": "boolean",
+            "default": true,
+            "description": "Install Python dependencies required for the ADX MCP server"
+        },
+        "installUv": {
+            "type": "boolean",
+            "default": true,
+            "description": "Install uv package manager for Python"
+        },
+        "serverPort": {
+            "type": "string",
+            "default": "3000",
+            "description": "Port to run the MCP server on (defaults to 3000)"
+        }
+    },
+    "containerEnv": {
+        "PYTHONUNBUFFERED": "1"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-azuretools.vscode-azureresourcegroups",
+                "ms-azuretools.vscode-azuredatastudio"
+            ]
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/python"
+    ]
+}
