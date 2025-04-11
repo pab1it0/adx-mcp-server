@@ -26,8 +26,8 @@
         }
     },
     "dependsOn": {
-        "ghcr.io/devcontainers/features/docker-in-docker": "latest",
-        "ghcr.io/devcontainers/features/azure-cli": "latest"
+        "ghcr.io/devcontainers/features/docker-in-docker": "1",
+        "ghcr.io/devcontainers/features/azure-cli": "2"
     },
     "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
     "customizations": {
