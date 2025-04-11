@@ -1,7 +1,7 @@
 {
     "name": "Azure Data Explorer MCP Server",
     "id": "adx-mcp-server",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Sets up the environment for the Azure Data Explorer Model Context Protocol server",
     "options": {
         "version": {
