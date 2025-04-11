@@ -14,11 +14,23 @@ This feature sets up everything needed to run and develop with an Azure Data Exp
 
 ```json
 "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/your-username/devcontainer-features/adx-mcp-server:1.0.0": {
-        "version": "latest"
+        "version": "latest",
+        "adxClusterUrl": "https://cluster.region.kusto.windows.net",
+        "adxDatabase": "my_database"
     }
 }
 ```
+
+## Dependencies
+
+This feature requires:
+- `ghcr.io/devcontainers/features/docker-in-docker` - For Docker container support
+- `ghcr.io/devcontainers/features/azure-cli` - For Azure Data Explorer authentication and operations
+
+These dependencies must be explicitly included in your devcontainer.json file.
 
 ## Options
 

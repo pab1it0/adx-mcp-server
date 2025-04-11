@@ -13,6 +13,19 @@ ADX_MCP_REPO="${ADXMCPREPO}"
 
 echo "Setting up Azure Data Explorer MCP Server..."
 
+# Check for required dependencies
+if ! command -v docker &> /dev/null; then
+    echo "ERROR: docker is not installed. This feature requires the docker-in-docker feature."
+    echo "Please add 'ghcr.io/devcontainers/features/docker-in-docker:2' to your devcontainer.json features."
+    exit 1
+fi
+
+if ! command -v az &> /dev/null; then
+    echo "ERROR: azure-cli is not installed. This feature requires the azure-cli feature."
+    echo "Please add 'ghcr.io/devcontainers/features/azure-cli:1' to your devcontainer.json features."
+    exit 1
+fi
+
 # Setup the server directory
 mkdir -p /opt/adx-mcp-server
 cd /opt/adx-mcp-server
