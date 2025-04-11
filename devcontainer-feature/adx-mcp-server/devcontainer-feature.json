@@ -20,10 +20,10 @@
             "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
         }
     },
-    "installsAfter": [
-        "ghcr.io/devcontainers/features/docker-in-docker",
-        "ghcr.io/devcontainers/features/azure-cli"
-    ],
+    "dependsOn": {
+        "ghcr.io/devcontainers/features/docker-in-docker": "latest",
+        "ghcr.io/devcontainers/features/azure-cli": "latest"
+    },
     "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
     "customizations": {
         "vscode": {
