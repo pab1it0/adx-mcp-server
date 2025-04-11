@@ -18,6 +18,11 @@
             "type": "string",
             "default": "",
             "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
+        },
+        "adxMcpRepo": {
+            "type": "string",
+            "default": "https://github.com/caol-ila/adx-mcp-server",
+            "description": "Azure Data Explorer MCP repository URL"
         }
     },
     "dependsOn": {
