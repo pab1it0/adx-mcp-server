@@ -27,7 +27,6 @@ This feature sets up everything needed to run and develop with an Azure Data Exp
 | version      | "latest"                                     | Version of the ADX MCP server to install                       |
 | adxClusterUrl| ""                                           | Azure Data Explorer cluster URL (must be specified at runtime) |
 | adxDatabase  | ""                                           | Azure Data Explorer database name (must be specified at runtime)|
-| adxMcpRepo   | "https://github.com/pab1it0/adx-mcp-server"  | Azure Data Explorer MCP repository URL                         |
 
 ## Docker Support
 
