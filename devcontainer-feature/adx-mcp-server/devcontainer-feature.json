@@ -1,0 +1,59 @@
+{
+    "name": "Azure Data Explorer MCP Server",
+    "id": "adx-mcp-server",
+    "version": "0.0.1",
+    "description": "Sets up the environment for the Azure Data Explorer Model Context Protocol server",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of the ADX MCP server to install (defaults to latest)"
+        },
+        "adxClusterUrl": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Data Explorer cluster URL (empty by default, must be specified at runtime)"
+        },
+        "adxDatabase": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
+        },
+        "adxMcpRepo": {
+            "type": "string",
+            "default": "https://github.com/pab1it0/adx-mcp-server",
+            "description": "Azure Data Explorer MCP repository URL"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/docker-in-docker"
+    ],
+    "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "mcp": {
+                    "servers": {
+                        "adx-mcp-server": {
+                            "type": "stdio",
+                            "command": "docker",
+                            "args": [
+                                "run",
+                                "--rm",
+                                "-i",
+                                "-v",
+                                "${userHome}/.azure:/root/.azure:rw",
+                                "-e",
+                                "ADX_CLUSTER_URL",
+                                "-e",
+                                "ADX_DATABASE",
+                                "adx-mcp-server"
+                            ],
+                            "envFile": "${userHome}/.adx-mcp-env"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

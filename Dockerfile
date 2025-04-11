@@ -26,6 +26,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM python:3.12-slim-bookworm
 
 WORKDIR /app
+
+# Install Azure CLI dependencies and Azure CLI
+RUN apt-get update && apt-get install -y \
+    curl \
+    apt-transport-https \
+    lsb-release \
+    gnupg \
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
  
 COPY --from=uv /root/.local /root/.local
 COPY --from=uv --chown=app:app /app/.venv /app/.venv

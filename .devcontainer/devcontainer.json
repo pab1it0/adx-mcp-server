@@ -1,0 +1,24 @@
+{
+    "name": "ADX MCP Server Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/azure-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "./features/adx-mcp-server": {
+            "version": "caol-ila-cmbrose-vibe-querying",
+            "adxClusterUrl": "",
+            "adxDatabase": "",
+            "adxMcpRepo": "https://github.com/caol-ila/adx-mcp-server",
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-azuretools.vscode-azureresourcegroups",
+                "ms-azuretools.vscode-azuredatastudio"
+            ]
+        }
+    }
+}
