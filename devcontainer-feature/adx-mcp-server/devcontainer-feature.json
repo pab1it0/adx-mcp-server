@@ -18,16 +18,12 @@
             "type": "string",
             "default": "",
             "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
-        },
-        "adxMcpRepo": {
-            "type": "string",
-            "default": "https://github.com/pab1it0/adx-mcp-server",
-            "description": "Azure Data Explorer MCP repository URL"
         }
     },
-    "installsAfter": [
-        "ghcr.io/devcontainers/features/docker-in-docker"
-    ],
+    "dependsOn": {
+        "ghcr.io/devcontainers/features/docker-in-docker": "latest",
+        "ghcr.io/devcontainers/features/azure-cli": "latest"
+    },
     "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
     "customizations": {
         "vscode": {
