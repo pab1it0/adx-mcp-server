@@ -4,11 +4,10 @@
     "features": {
         "ghcr.io/devcontainers/features/azure-cli:1": {},
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-        "./features/adx-mcp-server": {
+        "./devcontainer-feature/adx-mcp-server": {
             "version": "caol-ila-cmbrose-vibe-querying",
             "adxClusterUrl": "",
-            "adxDatabase": "",
-            "adxMcpRepo": "https://github.com/caol-ila/adx-mcp-server",
+            "adxDatabase": ""
         }
     },
     "customizations": {
