@@ -1,7 +1,7 @@
 {
     "name": "Azure Data Explorer MCP Server",
     "id": "adx-mcp-server",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Sets up the environment for the Azure Data Explorer Model Context Protocol server",
     "options": {
         "version": {
@@ -26,8 +26,8 @@
         }
     },
     "dependsOn": {
-        "ghcr.io/devcontainers/features/docker-in-docker:1": {},
-        "ghcr.io/devcontainers/features/azure-cli:2": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/azure-cli:1": {}
     },
     "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
     "customizations": {
