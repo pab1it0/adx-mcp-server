@@ -1,7 +1,7 @@
 {
     "name": "Azure Data Explorer MCP Server",
     "id": "adx-mcp-server",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "Sets up the environment for the Azure Data Explorer Model Context Protocol server",
     "options": {
         "version": {
@@ -19,36 +19,41 @@
             "default": "",
             "description": "Azure Data Explorer database name (empty by default, must be specified at runtime)"
         },
-        "installDependencies": {
-            "type": "boolean",
-            "default": true,
-            "description": "Install Python dependencies required for the ADX MCP server"
-        },
-        "installUv": {
-            "type": "boolean",
-            "default": true,
-            "description": "Install uv package manager for Python"
-        },
-        "serverPort": {
+        "adxMcpRepo": {
             "type": "string",
-            "default": "3000",
-            "description": "Port to run the MCP server on (defaults to 3000)"
-        }
-    },
-    "containerEnv": {
-        "PYTHONUNBUFFERED": "1"
-    },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "ms-azuretools.vscode-azureresourcegroups",
-                "ms-azuretools.vscode-azuredatastudio"
-            ]
+            "default": "https://github.com/pab1it0/adx-mcp-server",
+            "description": "Azure Data Explorer MCP repository URL"
         }
     },
     "installsAfter": [
-        "ghcr.io/devcontainers/features/python"
-    ]
+        "ghcr.io/devcontainers/features/docker-in-docker"
+    ],
+    "postCreateCommand": "az > /dev/null && docker build -t adx-mcp-server /opt/adx-mcp-server/.",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "mcp": {
+                    "servers": {
+                        "adx-mcp-server": {
+                            "type": "stdio",
+                            "command": "docker",
+                            "args": [
+                                "run",
+                                "--rm",
+                                "-i",
+                                "-v",
+                                "${userHome}/.azure:/root/.azure:rw",
+                                "-e",
+                                "ADX_CLUSTER_URL",
+                                "-e",
+                                "ADX_DATABASE",
+                                "adx-mcp-server"
+                            ],
+                            "envFile": "${userHome}/.adx-mcp-env"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
