@@ -3,6 +3,7 @@
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
         "./devcontainer-feature/adx-mcp-server": {
+            "version": "latest",
             "adxClusterUrl": "",
             "adxDatabase": ""
         }
