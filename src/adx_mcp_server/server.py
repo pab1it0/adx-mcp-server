@@ -72,7 +72,7 @@ async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
         raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
     
     client = get_kusto_client()
-    query = f".show table {table_name} | getschema"
+    query = f"{table_name} | getschema"
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
