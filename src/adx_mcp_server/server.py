@@ -86,6 +86,17 @@ async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict
     result_set = client.execute(config.database, query)
     return format_query_results(result_set)
 
+@mcp.tool(description="Retrieves table details including TotalRowCount, HotExtentSize")
+async def get_table_details(table_name: str) -> List[Dict[str, Any]]:
+    if not config.cluster_url or not config.database:
+        raise ValueError("Azure Data Explorer configuration is missing. Please set ADX_CLUSTER_URL and ADX_DATABASE environment variables.")
+    
+    client = get_kusto_client()
+    query = f".show table {table_name} details"
+    result_set = client.execute(config.database, query)
+    return format_query_results(result_set)
+
+
 if __name__ == "__main__":
     print(f"Starting Azure Data Explorer MCP Server...")
     mcp.run()
