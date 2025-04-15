@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-FEATURE_ROOT_DIR=$(realpath $(dirname "$0"))
-
 # The 'install.sh' entrypoint script is always executed as the root user
 
 # Variable declarations from feature options
