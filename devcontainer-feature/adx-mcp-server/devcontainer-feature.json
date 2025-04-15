@@ -21,7 +21,7 @@
         },
         "adxMcpRepo": {
             "type": "string",
-            "default": "https://github.com/caol-ila/adx-mcp-server",
+            "default": "https://github.com/pab1it0/adx-mcp-server",
             "description": "Azure Data Explorer MCP repository URL"
         }
     },
