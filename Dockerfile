@@ -52,4 +52,4 @@ ENTRYPOINT ["adx-mcp-server"]
 # Label the image
 LABEL maintainer="pab1it0" \
       description="Azure Data Explorer MCP Server" \
-      version="1.0.5"
+      version="1.0.6"
