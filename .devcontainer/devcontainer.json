@@ -2,7 +2,7 @@
     "name": "ADX MCP Server Dev Container",
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        "./devcontainer-feature/adx-mcp-server": {
+        "ghcr.io/pab1it0/adx-mcp-server/adx-mcp-server:latest": {
             "version": "latest",
             "adxClusterUrl": "",
             "adxDatabase": ""
