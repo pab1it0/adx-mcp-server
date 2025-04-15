@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.5 (2025-04-15)
+
+* Fixed `get_table_schema` function to return the correct schema (PR #31, @Cyb3r-Monk)
+* Added support for table statistics and Eventhouse in Microsoft Fabric (PR #32, @anshulsharmas)
+* Improved error handling and logging
+* Performance optimizations for query execution
+* Updated dependencies
+
+## 1.0.4 (2025-03-27)
+
+* Updated Dockerfile to use uv for dependency management (@pab1it0)
+* Added Smithery configuration for deployment (@smithery-ai[bot])
+* Updated README with additional documentation (@pab1it0)
+* Fixed various minor bugs and improved stability
+
 ## 1.0.3 (2025-03-25)
 
 * Version bump for new release
