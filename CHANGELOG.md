@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.6 (2025-04-15)
+
+* Added DevContainer Feature for seamless development experience (PR #34, @caol-ila)
+* Added GitHub workflow for releasing DevContainer Features
+* Updated Dockerfile to include Azure CLI for easier authentication
+* Enhanced documentation for DevContainer usage
+* Fixed path references in DevContainer documentation
+
 ## 1.0.5 (2025-04-15)
 
 * Fixed `get_table_schema` function to return the correct schema (PR #31, @Cyb3r-Monk)
