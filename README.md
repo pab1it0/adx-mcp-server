@@ -125,6 +125,14 @@ To use the containerized server with Claude Desktop, update the configuration to
 
 This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
 
+## Using as a Dev Container / GitHub Codespace
+
+This repository can also be used as a development container for a seamless development experience. The dev container setup is located in the `devcontainer-feature/adx-mcp-server` folder.
+
+For more details, check the [devcontainer README](devcontainer-feature/adx-mcp-server/README.md).
+
+
+
 ## Development
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
