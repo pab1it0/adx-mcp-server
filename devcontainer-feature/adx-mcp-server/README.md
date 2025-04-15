@@ -46,8 +46,8 @@ This feature includes the Docker CLI (`docker`) pre-installed and available on t
 
 ## License
 
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](../../LICENSE) file for details.
 
 ## Troubleshooting
 
-For more information about the MCP server, see the [documentation](docs/testing.md).
+For more information about the MCP server, see the [documentation](../../docs/testing.md).
