@@ -157,7 +157,7 @@ class TestServerTools:
                 assert mock_client.execute.call_count == 1
                 args, kwargs = mock_client.execute.call_args
                 assert args[0] == "testdb"  # First arg should be database
-                assert f".show table {table_name}" in args[1]  # Second arg should contain the table name
+                assert f"{table_name}" in args[1]  # Second arg should contain the table name
                 assert "getschema" in args[1]  # Second arg should contain the getschema command
                 
                 # Check result structure

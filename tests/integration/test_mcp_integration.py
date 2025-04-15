@@ -115,7 +115,7 @@ class TestMCPIntegration:
                 if ".show tables" in query:
                     return create_table_result()
                 elif "getschema" in query:
-                    table_name = query.split("table ")[1].split(" ")[0]
+                    table_name = query.split("|")[0].split(" ")[0]
                     return create_schema_result(table_name)
                 elif "sample" in query:
                     table_name = query.split(" ")[0]
