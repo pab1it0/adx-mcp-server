@@ -1,0 +1,9 @@
+{
+  "tag_name": "v1.0.6",
+  "target_commitish": "v1.0.6",
+  "name": "v1.0.6",
+  "body": "# ADX MCP Server v1.0.6\n\nThis release adds DevContainer Feature support to the ADX MCP Server, making it easier to develop and use the server in containerized environments.\n\n## New Features\n\n* Added DevContainer Feature for seamless development experience (PR #34, @caol-ila)\n* Added GitHub workflow for releasing DevContainer Features\n* Updated Dockerfile to include Azure CLI for easier authentication\n* Enhanced documentation for DevContainer usage\n* Fixed path references in DevContainer documentation\n\n## Installation\n\n### Using pip\n```bash\npip install adx-mcp-server==1.0.6\n```\n\n### Using Docker\n```bash\ndocker pull pab1it0/adx-mcp-server:1.0.6\n```\n\n### Using DevContainer Feature\nAdd the following to your `devcontainer.json`:\n```json\n\"features\": {\n    \"ghcr.io/pab1it0/devcontainer-features/adx-mcp-server:1.0.0\": {\n        \"version\": \"latest\",\n        \"adxClusterUrl\": \"https://cluster.region.kusto.windows.net\",\n        \"adxDatabase\": \"my_database\"\n    }\n}\n```\n\n## Documentation\n\nSee the updated [README.md](https://github.com/pab1it0/adx-mcp-server/blob/main/README.md) and [DevContainer Feature documentation](https://github.com/pab1it0/adx-mcp-server/blob/main/devcontainer-feature/adx-mcp-server/README.md) for more details.",
+  "draft": false,
+  "prerelease": false,
+  "generate_release_notes": true
+}
