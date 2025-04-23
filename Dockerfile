@@ -45,8 +45,14 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Set environment variables for ADX MCP Server
 ENV PYTHONUNBUFFERED=1
+ENV ADX_MCP_HOST=0.0.0.0
+ENV ADX_MCP_PORT=8000
 
-# when running the container, add ADX_CLUSTER_URL and ADX_DATABASE environment variables
+# Expose the port for SSE mode
+EXPOSE 8000
+
+# when running the container, you can override the default transport mode with arguments
+# e.g. docker run -it --rm -p 8000:8000 adx-mcp-server --transport sse
 ENTRYPOINT ["adx-mcp-server"]
 
 # Label the image

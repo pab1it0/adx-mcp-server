@@ -6,12 +6,24 @@ from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
 
 import dotenv
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, create_sse_server
 from azure.identity import DefaultAzureCredential
 from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
 
 dotenv.load_dotenv()
-mcp = FastMCP("Azure Data Explorer MCP")
+
+# Get SSE configuration from environment
+SSE_HOST = os.environ.get("ADX_MCP_HOST", "0.0.0.0")
+SSE_PORT = int(os.environ.get("ADX_MCP_PORT", "8000"))
+SSE_LOG_LEVEL = os.environ.get("ADX_MCP_LOG_LEVEL", "INFO")
+
+# Initialize FastMCP with SSE configuration
+mcp = FastMCP(
+    name="Azure Data Explorer MCP",
+    host=SSE_HOST,
+    port=SSE_PORT,
+    log_level=SSE_LOG_LEVEL
+)
 
 @dataclass
 class ADXConfig:

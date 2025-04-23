@@ -10,6 +10,8 @@ dependencies = [
     "azure-identity",
     "python-dotenv",
     "pyproject-toml>=0.1.0",
+    "fastapi>=0.103.1",
+    "uvicorn>=0.23.2",
 ]
 
 [project.optional-dependencies]
@@ -22,6 +24,7 @@ dev = [
 
 [project.scripts]
 adx-mcp-server = "adx_mcp_server.main:run_server"
+adx-mcp-server-sse = "adx_mcp_server.main:run_server"
 
 [tool.setuptools]
 packages = ["adx_mcp_server"]

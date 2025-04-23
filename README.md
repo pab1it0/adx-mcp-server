@@ -8,6 +8,8 @@ A [Model Context Protocol][mcp] (MCP) server for Azure Data Explorer/Eventhouse 
 
 This provides access to your Azure Data Explorer/Eventhouse clusters and databases through standardized MCP interfaces, allowing AI assistants to execute KQL queries and explore your data.
 
+Supports both STDIO (standard) and SSE (Server-Sent Events) transport modes for flexible integration options.
+
 [mcp]: https://modelcontextprotocol.io
 
 ## Features
@@ -22,6 +24,10 @@ This provides access to your Azure Data Explorer/Eventhouse clusters and databas
 - [x] Authentication support
   - [x] Token credential support (Azure CLI, MSI, etc.)
 - [x] Docker containerization support
+
+- [x] Multiple transport mode support
+  - [x] STDIO (standard input/output) for command-line integration
+  - [x] SSE (Server-Sent Events) for web-based integration
 
 - [x] Provide interactive tools for AI assistants
 
@@ -38,7 +44,14 @@ This is useful if you don't use certain functionality or if you don't want to ta
 # Required: Azure Data Explorer configuration
 ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net
 ADX_DATABASE=your_database
+
+# Optional: SSE mode configuration (if using SSE transport)
+ADX_MCP_HOST=0.0.0.0  # Host to bind for SSE mode
+ADX_MCP_PORT=8000     # Port to listen on for SSE mode
+ADX_MCP_LOG_LEVEL=INFO  # Logging level
 ```
+
+### STDIO Mode (Default)
 
 3. Add the server configuration to your client configuration file. For example, for Claude Desktop:
 
@@ -64,6 +77,35 @@ ADX_DATABASE=your_database
 
 > Note: if you see `Error: spawn uv ENOENT` in Claude Desktop, you may need to specify the full path to `uv` or set the environment variable `NO_UV=1` in the configuration.
 
+### SSE Mode (Server-Sent Events)
+
+3. To use the server in SSE mode, you can run it directly with the `--transport sse` option:
+
+```bash
+# Run directly with Python
+python -m adx_mcp_server.main --transport sse
+
+# Or using the installed package
+adx-mcp-server --transport sse
+```
+
+This will start an HTTP server that uses Server-Sent Events (SSE) for MCP communication.
+
+4. Configure your client to connect to the SSE endpoint. For clients that support SSE-based MCP servers:
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "url": "http://localhost:8000/",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+The server also provides a `/health` endpoint to verify the server status.
+
 ## Docker Usage
 
 This project includes Docker support for easy deployment and isolation.
@@ -80,7 +122,7 @@ docker build -t adx-mcp-server .
 
 You can run the server using Docker in several ways:
 
-#### Using docker run directly:
+#### Using docker run directly (STDIO mode):
 
 ```bash
 docker run -it --rm \
@@ -89,17 +131,33 @@ docker run -it --rm \
   adx-mcp-server
 ```
 
+#### Using docker run for SSE mode:
+
+```bash
+docker run -it --rm \
+  -p 8000:8000 \
+  -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
+  -e ADX_DATABASE=your_database \
+  adx-mcp-server --transport sse
+```
+
 #### Using docker-compose:
 
 Create a `.env` file with your Azure Data Explorer credentials and then run:
 
 ```bash
-docker-compose up
+# For standard STDIO mode
+docker-compose up adx-mcp-server
+
+# For SSE mode
+docker-compose up adx-mcp-server-sse
 ```
 
 ### Running with Docker in Claude Desktop
 
 To use the containerized server with Claude Desktop, update the configuration to use Docker with the environment variables:
+
+#### STDIO Mode
 
 ```json
 {
@@ -124,6 +182,34 @@ To use the containerized server with Claude Desktop, update the configuration to
 ```
 
 This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
+
+#### SSE Mode
+
+For SSE mode, you would typically run the Docker container separately and configure Claude Desktop to connect to it:
+
+1. Start the Docker container with SSE mode and port forwarding:
+
+```bash
+docker run -d --name adx-mcp-sse -p 8000:8000 \
+  -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
+  -e ADX_DATABASE=your_database \
+  adx-mcp-server --transport sse
+```
+
+2. Configure Claude Desktop to use the SSE endpoint:
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "url": "http://localhost:8000/",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+This setup allows multiple clients to connect to the same ADX MCP server instance.
 
 ## Using as a Dev Container / GitHub Codespace
 
