@@ -14,7 +14,7 @@ This feature sets up everything needed to run and develop with an Azure Data Exp
 
 ```json
 "features": {
-    "ghcr.io/your-username/devcontainer-features/adx-mcp-server:1.0.0": {
+    "ghcr.io/pab1it0/adx-mcp-server/adx-mcp-server:latest": {
         "version": "latest",
         "adxClusterUrl": "https://cluster.region.kusto.windows.net",
         "adxDatabase": "my_database",
