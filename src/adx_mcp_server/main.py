@@ -23,7 +23,15 @@ def setup_environment():
     print(f"Azure Data Explorer configuration:")
     print(f"  Cluster: {config.cluster_url}")
     print(f"  Database: {config.database}")
-    print(f"  Authentication: Using DefaultAzureCredential")
+    
+    if config.use_workload_identity and config.tenant_id and config.client_id:
+        print(f"  Authentication: Using WorkloadIdentityCredential")
+        print(f"    Tenant ID: {config.tenant_id}")
+        print(f"    Client ID: {config.client_id}")
+        if config.token_file_path:
+            print(f"    Token File Path: {config.token_file_path}")
+    else:
+        print(f"  Authentication: Using DefaultAzureCredential")
     
     return True
 

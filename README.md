@@ -21,6 +21,7 @@ This provides access to your Azure Data Explorer/Eventhouse clusters and databas
 
 - [x] Authentication support
   - [x] Token credential support (Azure CLI, MSI, etc.)
+  - [x] Workload Identity credential support for AKS
 - [x] Docker containerization support
 
 - [x] Provide interactive tools for AI assistants
@@ -38,7 +39,27 @@ This is useful if you don't use certain functionality or if you don't want to ta
 # Required: Azure Data Explorer configuration
 ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net
 ADX_DATABASE=your_database
+
+# Optional: Azure Workload Identity configuration (for AKS deployments)
+# ADX_USE_WORKLOAD_IDENTITY=true
+# ADX_TENANT_ID=your_tenant_id
+# ADX_CLIENT_ID=your_client_id
+# ADX_TOKEN_FILE_PATH=/var/run/secrets/azure/tokens/azure-identity-token
 ```
+
+#### Azure Workload Identity Support
+
+The server supports Azure Workload Identity for authentication when running in Azure Kubernetes Service (AKS) environments. There are two ways to use Workload Identity:
+
+1. **Automatic detection**: By default, the server uses `DefaultAzureCredential` which automatically tries different authentication methods including Workload Identity when running in an AKS environment with the proper Workload Identity configuration.
+
+2. **Explicit configuration**: You can explicitly configure Workload Identity by setting the following environment variables:
+   - `ADX_USE_WORKLOAD_IDENTITY=true` - Enable explicit WorkloadIdentityCredential usage
+   - `ADX_TENANT_ID` - Your Azure tenant ID
+   - `ADX_CLIENT_ID` - The client/application ID for the managed identity
+   - `ADX_TOKEN_FILE_PATH` - Optional path to the token file (default: `/var/run/secrets/azure/tokens/azure-identity-token`)
+
+Using explicit configuration is helpful when you need more control over the authentication process or need to debug authentication issues.
 
 3. Add the server configuration to your client configuration file. For example, for Claude Desktop:
 
@@ -86,6 +107,9 @@ You can run the server using Docker in several ways:
 docker run -it --rm \
   -e ADX_CLUSTER_URL=https://yourcluster.region.kusto.windows.net \
   -e ADX_DATABASE=your_database \
+  -e ADX_USE_WORKLOAD_IDENTITY=false \
+  -e ADX_TENANT_ID=your_tenant_id \
+  -e ADX_CLIENT_ID=your_client_id \
   adx-mcp-server
 ```
 
@@ -112,11 +136,19 @@ To use the containerized server with Claude Desktop, update the configuration to
         "-i",
         "-e", "ADX_CLUSTER_URL",
         "-e", "ADX_DATABASE",
+        "-e", "ADX_USE_WORKLOAD_IDENTITY",
+        "-e", "ADX_TENANT_ID",
+        "-e", "ADX_CLIENT_ID",
+        "-e", "ADX_TOKEN_FILE_PATH",
         "adx-mcp-server"
       ],
       "env": {
         "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
-        "ADX_DATABASE": "your_database"
+        "ADX_DATABASE": "your_database",
+        "ADX_USE_WORKLOAD_IDENTITY": "false",
+        "ADX_TENANT_ID": "your_tenant_id",
+        "ADX_CLIENT_ID": "your_client_id",
+        "ADX_TOKEN_FILE_PATH": "/var/run/secrets/azure/tokens/azure-identity-token"
       }
     }
   }
