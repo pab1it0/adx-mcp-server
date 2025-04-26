@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 import dotenv
 from adx_mcp_server.server import mcp, config
 
@@ -24,12 +25,15 @@ def setup_environment():
     print(f"  Cluster: {config.cluster_url}")
     print(f"  Database: {config.database}")
     
-    if config.use_workload_identity and config.tenant_id and config.client_id:
+    # Check for Azure workload identity credentials
+    tenant_id = os.environ.get('AZURE_TENANT_ID')
+    client_id = os.environ.get('AZURE_CLIENT_ID')
+    if tenant_id and client_id:
         print(f"  Authentication: Using WorkloadIdentityCredential")
-        print(f"    Tenant ID: {config.tenant_id}")
-        print(f"    Client ID: {config.client_id}")
-        if config.token_file_path:
-            print(f"    Token File Path: {config.token_file_path}")
+        print(f"    Tenant ID: {tenant_id}")
+        print(f"    Client ID: {client_id}")
+        token_file_path = os.environ.get('ADX_TOKEN_FILE_PATH', '/var/run/secrets/azure/tokens/azure-identity-token')
+        print(f"    Token File Path: {token_file_path}")
     else:
         print(f"  Authentication: Using DefaultAzureCredential")
     
