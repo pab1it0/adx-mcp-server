@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
- 
+
 COPY --from=uv /root/.local /root/.local
 COPY --from=uv --chown=app:app /app/.venv /app/.venv
 
@@ -51,5 +51,5 @@ ENTRYPOINT ["adx-mcp-server"]
 
 # Label the image
 LABEL maintainer="pab1it0" \
-      description="Azure Data Explorer MCP Server" \
-      version="1.0.6"
+    description="Azure Data Explorer MCP Server" \
+    version="1.0.7"
