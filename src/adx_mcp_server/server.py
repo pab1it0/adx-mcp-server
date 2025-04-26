@@ -17,8 +17,7 @@ mcp = FastMCP("Azure Data Explorer MCP")
 class ADXConfig:
     cluster_url: str
     database: str
-    # Workload Identity specific fields
-    use_workload_identity: bool = False
+    use_workload_identity: bool = True
     tenant_id: Optional[str] = None
     client_id: Optional[str] = None
     token_file_path: Optional[str] = None
@@ -34,15 +33,12 @@ config = ADXConfig(
 
 def get_kusto_client() -> KustoClient:
     if config.use_workload_identity and config.tenant_id and config.client_id:
-        # Use explicit WorkloadIdentityCredential
         credential = WorkloadIdentityCredential(
             tenant_id=config.tenant_id,
             client_id=config.client_id,
             token_file_path=config.token_file_path
         )
     else:
-        # Fallback to DefaultAzureCredential which will use WorkloadIdentityCredential 
-        # automatically if the environment is properly configured
         credential = DefaultAzureCredential()
     
     kcsb = KustoConnectionStringBuilder.with_azure_token_credential(
