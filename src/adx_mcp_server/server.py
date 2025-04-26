@@ -17,28 +17,35 @@ mcp = FastMCP("Azure Data Explorer MCP")
 class ADXConfig:
     cluster_url: str
     database: str
-    use_workload_identity: bool = True
-    tenant_id: Optional[str] = None
-    client_id: Optional[str] = None
-    token_file_path: Optional[str] = None
 
 config = ADXConfig(
     cluster_url=os.environ.get("ADX_CLUSTER_URL", ""),
     database=os.environ.get("ADX_DATABASE", ""),
-    use_workload_identity=os.environ.get("ADX_USE_WORKLOAD_IDENTITY", "").lower() == "true",
-    tenant_id=os.environ.get("ADX_TENANT_ID", None),
-    client_id=os.environ.get("ADX_CLIENT_ID", None),
-    token_file_path=os.environ.get("ADX_TOKEN_FILE_PATH", None),
 )
 
 def get_kusto_client() -> KustoClient:
-    if config.use_workload_identity and config.tenant_id and config.client_id:
-        credential = WorkloadIdentityCredential(
-            tenant_id=config.tenant_id,
-            client_id=config.client_id,
-            token_file_path=config.token_file_path
-        )
+    # Get tenant and client IDs from environment variables
+    tenant_id = os.environ.get('AZURE_TENANT_ID')
+    client_id = os.environ.get('AZURE_CLIENT_ID')
+    token_file_path = os.environ.get('ADX_TOKEN_FILE_PATH', '/var/run/secrets/azure/tokens/azure-identity-token')
+    
+    # Check if we have the necessary credentials for WorkloadIdentityCredential
+    if tenant_id and client_id:
+        print(f"Using WorkloadIdentityCredential with client_id: {client_id}")
+        try:
+            # Use WorkloadIdentityCredential as the default option
+            credential = WorkloadIdentityCredential(
+                tenant_id=tenant_id,
+                client_id=client_id,
+                token_file_path=token_file_path
+            )
+        except Exception as e:
+            print(f"Error initializing WorkloadIdentityCredential: {str(e)}")
+            print("Falling back to DefaultAzureCredential")
+            credential = DefaultAzureCredential()
     else:
+        # Fall back to DefaultAzureCredential if tenant_id or client_id is missing
+        print("Missing tenant_id or client_id, using DefaultAzureCredential")
         credential = DefaultAzureCredential()
     
     kcsb = KustoConnectionStringBuilder.with_azure_token_credential(
