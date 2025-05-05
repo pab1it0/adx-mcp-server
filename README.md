@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/pab1it0-adx-mcp-server-badge.png)](https://mseep.ai/app/pab1it0-adx-mcp-server)
+
 # Azure Data Explorer MCP Server
 
 <a href="https://glama.ai/mcp/servers/1yysyd147h">
