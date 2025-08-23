@@ -9,6 +9,7 @@ from io import StringIO
 
 # Import the module to test
 from adx_mcp_server.main import setup_environment
+from adx_mcp_server.server import MCPServerConfig
 
 class TestMain:
     def test_setup_environment_success(self, monkeypatch, capsys):
@@ -138,6 +139,75 @@ class TestMain:
                     
                     # Verify sys.exit was not called
                     mock_exit.assert_not_called()
+
+    def test_setup_environment_with_http_transport(self, monkeypatch, capsys):
+        """Test setup_environment with HTTP transport configuration."""
+        # Set up environment variables
+        monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
+        monkeypatch.setenv("ADX_DATABASE", "testdb")
+        monkeypatch.setenv("ADX_MCP_SERVER_TRANSPORT", "http")
+        monkeypatch.setenv("ADX_MCP_BIND_HOST", "localhost")
+        monkeypatch.setenv("ADX_MCP_BIND_PORT", "8080")
+        
+        # Update config in the server module directly
+        from adx_mcp_server.server import config
+        config.cluster_url = "https://testcluster.region.kusto.windows.net"
+        config.database = "testdb"
+        config.mcp_server_config = MCPServerConfig(
+            mcp_server_transport="http",
+            mcp_bind_host="localhost",
+            mcp_bind_port=8080
+        )
+        
+        with patch('dotenv.load_dotenv', return_value=False):
+            result = setup_environment()
+            
+            assert result is True
+            captured = capsys.readouterr()
+            assert "Azure Data Explorer configuration:" in captured.out
+            assert "Authentication: Using DefaultAzureCredential" in captured.out
+
+    def test_setup_environment_invalid_transport(self, monkeypatch, capsys):
+        """Test setup_environment with invalid transport type."""
+        monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
+        monkeypatch.setenv("ADX_DATABASE", "testdb")
+        
+        from adx_mcp_server.server import config
+        config.cluster_url = "https://testcluster.region.kusto.windows.net"
+        config.database = "testdb"
+        config.mcp_server_config = MCPServerConfig(
+            mcp_server_transport="invalid_transport",
+            mcp_bind_host="localhost",
+            mcp_bind_port=8080
+        )
+        
+        with patch('dotenv.load_dotenv', return_value=False):
+            result = setup_environment()
+            
+            assert result is False
+            captured = capsys.readouterr()
+            assert "ERROR: Invalid MCP transport" in captured.out
+
+    def test_setup_environment_invalid_port(self, monkeypatch, capsys):
+        """Test setup_environment with invalid port configuration."""
+        monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
+        monkeypatch.setenv("ADX_DATABASE", "testdb")
+        
+        from adx_mcp_server.server import config
+        config.cluster_url = "https://testcluster.region.kusto.windows.net"
+        config.database = "testdb"
+        config.mcp_server_config = MCPServerConfig(
+            mcp_server_transport="http",
+            mcp_bind_host="localhost",
+            mcp_bind_port="invalid_port"
+        )
+        
+        with patch('dotenv.load_dotenv', return_value=False):
+            result = setup_environment()
+            
+            assert result is False
+            captured = capsys.readouterr()
+            assert "ERROR: Invalid MCP port" in captured.out
 
     # Since we're having persistent issues with the main function test,
     # it's more practical to skip this test rather than continue trying 

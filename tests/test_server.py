@@ -290,3 +290,79 @@ class TestServerTools:
         # Test with None
         result = server.format_query_results(None)
         assert result == []
+
+
+class TestTransportConfiguration:
+    def test_transport_type_enum_values(self):
+        """Test TransportType enum values."""
+        from adx_mcp_server.server import TransportType
+        
+        assert TransportType.STDIO == "stdio"
+        assert TransportType.HTTP == "http"
+        assert TransportType.SSE == "sse"
+        
+        assert TransportType.values() == ["stdio", "http", "sse"]
+
+    def test_mcp_server_config_validation(self):
+        """Test MCPServerConfig validation."""
+        from adx_mcp_server.server import MCPServerConfig
+        
+        # Valid configuration
+        config = MCPServerConfig(
+            mcp_server_transport="http",
+            mcp_bind_host="localhost",
+            mcp_bind_port=8080
+        )
+        assert config.mcp_server_transport == "http"
+        assert config.mcp_bind_host == "localhost"
+        assert config.mcp_bind_port == 8080
+        
+    def test_mcp_server_config_validation_failures(self):
+        """Test MCPServerConfig validation failures."""
+        from adx_mcp_server.server import MCPServerConfig
+        
+        # Missing transport
+        with pytest.raises(ValueError, match="MCP SERVER TRANSPORT is required"):
+            MCPServerConfig(
+                mcp_server_transport=None,
+                mcp_bind_host="localhost",
+                mcp_bind_port=8080
+            )
+        
+        # Missing host
+        with pytest.raises(ValueError, match="MCP BIND HOST is required"):
+            MCPServerConfig(
+                mcp_server_transport="http",
+                mcp_bind_host=None,
+                mcp_bind_port=8080
+            )
+        
+        # Missing port
+        with pytest.raises(ValueError, match="MCP BIND PORT is required"):
+            MCPServerConfig(
+                mcp_server_transport="http",
+                mcp_bind_host="localhost",
+                mcp_bind_port=None
+            )
+
+    def test_adx_config_with_mcp_server_config(self):
+        """Test ADXConfig with MCP server configuration."""
+        from adx_mcp_server.server import ADXConfig, MCPServerConfig
+        
+        mcp_config = MCPServerConfig(
+            mcp_server_transport="sse",
+            mcp_bind_host="0.0.0.0",
+            mcp_bind_port=3000
+        )
+        
+        adx_config = ADXConfig(
+            cluster_url="https://test.kusto.windows.net",
+            database="testdb",
+            mcp_server_config=mcp_config
+        )
+        
+        assert adx_config.cluster_url == "https://test.kusto.windows.net"
+        assert adx_config.database == "testdb"
+        assert adx_config.mcp_server_config.mcp_server_transport == "sse"
+        assert adx_config.mcp_server_config.mcp_bind_host == "0.0.0.0"
+        assert adx_config.mcp_server_config.mcp_bind_port == 3000

@@ -44,6 +44,13 @@ ADX_DATABASE=your_database
 # AZURE_TENANT_ID=your-tenant-id
 # AZURE_CLIENT_ID=your-client-id 
 # ADX_TOKEN_FILE_PATH=/var/run/secrets/azure/tokens/azure-identity-token
+
+# Optional: Custom MCP Server configuration
+ADX_MCP_SERVER_TRANSPORT=stdio # Choose between http/sse/stdio, default = stdio
+
+# Optional: Only relevant for non-stdio transports
+ADX_MCP_BIND_HOST=127.0.0.1 # default = 127.0.0.1
+ADX_MCP_BIND_PORT=8080 # default = 8080
 ```
 
 #### Azure Workload Identity Support
@@ -148,6 +155,39 @@ To use the containerized server with Claude Desktop, update the configuration to
 ```
 
 This configuration passes the environment variables from Claude Desktop to the Docker container by using the `-e` flag with just the variable name, and providing the actual values in the `env` object.
+
+#### Using Docker with HTTP Transport
+
+For HTTP mode deployment, you can use the following Docker configuration:
+
+```json
+{
+  "mcpServers": {
+    "adx": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-p", "8080:8080",
+        "-e", "ADX_CLUSTER_URL",
+        "-e", "ADX_DATABASE", 
+        "-e", "ADX_MCP_SERVER_TRANSPORT",
+        "-e", "ADX_MCP_BIND_HOST",
+        "-e", "ADX_MCP_BIND_PORT",
+        "adx-mcp-server"
+      ],
+      "env": {
+        "ADX_CLUSTER_URL": "https://yourcluster.region.kusto.windows.net",
+        "ADX_DATABASE": "your_database",
+        "ADX_MCP_SERVER_TRANSPORT": "http",
+        "ADX_MCP_BIND_HOST": "0.0.0.0",
+        "ADX_MCP_BIND_PORT": "8080"
+      }
+    }
+  }
+}
+```
 
 ## Using as a Dev Container / GitHub Codespace
 

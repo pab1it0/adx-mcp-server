@@ -2,7 +2,7 @@
 import sys
 import os
 import dotenv
-from adx_mcp_server.server import mcp, config
+from adx_mcp_server.server import mcp, config, TransportType
 
 def setup_environment():
     if dotenv.load_dotenv():
@@ -20,6 +20,26 @@ def setup_environment():
         print("ERROR: ADX_DATABASE environment variable is not set")
         print("Please set it to your Azure Data Explorer database name")
         return False
+
+    # MCP Server configuration validation
+    mcp_config = config.mcp_server_config
+    if mcp_config:
+        if str(mcp_config.mcp_server_transport).lower() not in TransportType.values():
+            print("ERROR: Invalid MCP transport")
+            print("ADX_MCP_SERVER_TRANSPORT environment variable is invalid")
+            print("Please define one of these acceptable transports (http/sse/stdio)")
+            print("Example: http")
+            return False
+
+        try:
+            if mcp_config.mcp_bind_port:
+                int(mcp_config.mcp_bind_port)
+        except (TypeError, ValueError):
+            print("ERROR: Invalid MCP port")
+            print("ADX_MCP_BIND_PORT environment variable is invalid")
+            print("Please define an integer")
+            print("Example: 8080")
+            return False
 
     print(f"Azure Data Explorer configuration:")
     print(f"  Cluster: {config.cluster_url}")
@@ -45,11 +65,18 @@ def run_server():
     if not setup_environment():
         sys.exit(1)
     
-    print("\nStarting Azure Data Explorer MCP Server...")
-    print("Running server in standard mode...")
-    
-    # Run the server with the stdio transport
-    mcp.run(transport="stdio")
+    mcp_config = config.mcp_server_config
+    transport = mcp_config.mcp_server_transport
+
+    http_transports = [TransportType.HTTP.value, TransportType.SSE.value]
+    if transport in http_transports:
+        print(f"\nStarting Azure Data Explorer MCP Server...")
+        print(f"Running server in {transport} mode on {mcp_config.mcp_bind_host}:{mcp_config.mcp_bind_port}")
+        mcp.run(transport=transport, host=mcp_config.mcp_bind_host, port=mcp_config.mcp_bind_port)
+    else:
+        print(f"\nStarting Azure Data Explorer MCP Server...")
+        print(f"Running server in {transport} mode...")
+        mcp.run(transport=transport)
 
 if __name__ == "__main__":
     run_server()

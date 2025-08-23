@@ -46,10 +46,13 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Set environment variables for ADX MCP Server
 ENV PYTHONUNBUFFERED=1
 
+# Expose port for HTTP/SSE transports
+EXPOSE 8080
+
 # when running the container, add ADX_CLUSTER_URL and ADX_DATABASE environment variables
 ENTRYPOINT ["adx-mcp-server"]
 
 # Label the image
 LABEL maintainer="pab1it0" \
     description="Azure Data Explorer MCP Server" \
-    version="1.0.9"
+    version="1.1.0"
