@@ -4,7 +4,7 @@ import os
 import pytest
 import sys
 import importlib
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 from io import StringIO
 
 # Import the module to test
@@ -12,107 +12,100 @@ from adx_mcp_server.main import setup_environment
 from adx_mcp_server.server import MCPServerConfig
 
 class TestMain:
-    def test_setup_environment_success(self, monkeypatch, capsys):
+    def test_setup_environment_success(self, monkeypatch):
         """Test setup_environment with all required variables."""
         # Set up environment variables for this specific test
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
-        
+
         # Update config in the main module directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
-        
+
         with patch('dotenv.load_dotenv', return_value=False):
-            result = setup_environment()
-            
-            # Check the function's return value
-            assert result is True
-            
-            # Check the output messages
-            captured = capsys.readouterr()
-            assert "No .env file found" in captured.out
-            assert "Azure Data Explorer configuration:" in captured.out
-            assert "Cluster: https://testcluster.region.kusto.windows.net" in captured.out
-            assert "Database: testdb" in captured.out
-            assert "Authentication: Using DefaultAzureCredential" in captured.out
+            with patch('adx_mcp_server.main.logger') as mock_logger:
+                result = setup_environment()
+
+                # Check the function's return value
+                assert result is True
+
+                # Verify logger was called with correct information
+                mock_logger.info.assert_any_call("No .env file found, using system environment variables")
+                mock_logger.info.assert_any_call(
+                    "Azure Data Explorer configuration loaded",
+                    cluster_url="https://testcluster.region.kusto.windows.net",
+                    database="testdb"
+                )
+                mock_logger.info.assert_any_call("Using DefaultAzureCredential for authentication")
     
-    def test_setup_environment_missing_cluster(self, monkeypatch, capsys):
+    def test_setup_environment_missing_cluster(self, monkeypatch):
         """Test setup_environment with missing cluster URL."""
         # Set up minimal environment
         monkeypatch.setenv("ADX_DATABASE", "testdb")
         monkeypatch.delenv("ADX_CLUSTER_URL", raising=False)
-        
+
         # Update config directly
         from adx_mcp_server.server import config
         config.cluster_url = ""
         config.database = "testdb"
-        
+
         with patch('dotenv.load_dotenv', return_value=False):
-            # Patch the os.environ.get to return our values
-            with patch('os.environ.get', side_effect=lambda key, default: {
-                "ADX_CLUSTER_URL": "", 
-                "ADX_DATABASE": "testdb"
-            }.get(key, default)):
+            with patch('adx_mcp_server.main.logger') as mock_logger:
                 result = setup_environment()
-                
+
                 # Check the function's return value
                 assert result is False
-            
-            # Check the output messages
-            captured = capsys.readouterr()
-            assert "ERROR: ADX_CLUSTER_URL environment variable is not set" in captured.out
+
+                # Check the logger was called with error
+                mock_logger.error.assert_called_with(
+                    "Missing required configuration",
+                    variable="ADX_CLUSTER_URL",
+                    example="https://youradxcluster.region.kusto.windows.net"
+                )
     
-    def test_setup_environment_missing_database(self, monkeypatch, capsys):
+    def test_setup_environment_missing_database(self, monkeypatch):
         """Test setup_environment with missing database."""
         # Set up minimal environment
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.delenv("ADX_DATABASE", raising=False)
-        
+
         # Update config directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = ""
-        
+
         with patch('dotenv.load_dotenv', return_value=False):
-            # Patch the os.environ.get to return our values
-            with patch('os.environ.get', side_effect=lambda key, default: {
-                "ADX_CLUSTER_URL": "https://testcluster.region.kusto.windows.net", 
-                "ADX_DATABASE": "",
-            }.get(key, default)):
+            with patch('adx_mcp_server.main.logger') as mock_logger:
                 result = setup_environment()
-                
+
                 # Check the function's return value
                 assert result is False
+
+                # Check the logger was called with error
+                mock_logger.error.assert_called_with(
+                    "Missing required configuration",
+                    variable="ADX_DATABASE"
+                )
             
-            # Check the output messages
-            captured = capsys.readouterr()
-            assert "ERROR: ADX_DATABASE environment variable is not set" in captured.out
-            
-    def test_setup_environment_missing_credentials(self, monkeypatch, capsys):
+    def test_setup_environment_missing_credentials(self, monkeypatch):
         """Test setup_environment with missing credentials."""
         # Set up minimal environment but remove credentials
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
 
-        
         # Update config directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
-        
-        with patch('dotenv.load_dotenv', return_value=False):
-            # Patch the os.environ.get to return our values
-            with patch('os.environ.get', side_effect=lambda key, default: {
-                "ADX_CLUSTER_URL": "https://testcluster.region.kusto.windows.net", 
-                "ADX_DATABASE": "testdb",
 
-            }.get(key, default)):
+        with patch('dotenv.load_dotenv', return_value=False):
+            with patch('adx_mcp_server.main.logger') as mock_logger:
                 result = setup_environment()
                 assert result is True
-            
-            captured = capsys.readouterr()
-            assert "Authentication: Using DefaultAzureCredential" in captured.out
+
+                # Verify logger was called
+                mock_logger.info.assert_any_call("Using DefaultAzureCredential for authentication")
     
     def test_main_function_success(self):
         """Test the main function with successful setup."""
@@ -140,7 +133,7 @@ class TestMain:
                     # Verify sys.exit was not called
                     mock_exit.assert_not_called()
 
-    def test_setup_environment_with_http_transport(self, monkeypatch, capsys):
+    def test_setup_environment_with_http_transport(self, monkeypatch):
         """Test setup_environment with HTTP transport configuration."""
         # Set up environment variables
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
@@ -148,7 +141,7 @@ class TestMain:
         monkeypatch.setenv("ADX_MCP_SERVER_TRANSPORT", "http")
         monkeypatch.setenv("ADX_MCP_BIND_HOST", "localhost")
         monkeypatch.setenv("ADX_MCP_BIND_PORT", "8080")
-        
+
         # Update config in the server module directly
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
@@ -158,20 +151,24 @@ class TestMain:
             mcp_bind_host="localhost",
             mcp_bind_port=8080
         )
-        
-        with patch('dotenv.load_dotenv', return_value=False):
-            result = setup_environment()
-            
-            assert result is True
-            captured = capsys.readouterr()
-            assert "Azure Data Explorer configuration:" in captured.out
-            assert "Authentication: Using DefaultAzureCredential" in captured.out
 
-    def test_setup_environment_invalid_transport(self, monkeypatch, capsys):
+        with patch('dotenv.load_dotenv', return_value=False):
+            with patch('adx_mcp_server.main.logger') as mock_logger:
+                result = setup_environment()
+
+                assert result is True
+                mock_logger.info.assert_any_call(
+                    "Azure Data Explorer configuration loaded",
+                    cluster_url="https://testcluster.region.kusto.windows.net",
+                    database="testdb"
+                )
+                mock_logger.info.assert_any_call("Using DefaultAzureCredential for authentication")
+
+    def test_setup_environment_invalid_transport(self, monkeypatch):
         """Test setup_environment with invalid transport type."""
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
-        
+
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
@@ -180,19 +177,19 @@ class TestMain:
             mcp_bind_host="localhost",
             mcp_bind_port=8080
         )
-        
-        with patch('dotenv.load_dotenv', return_value=False):
-            result = setup_environment()
-            
-            assert result is False
-            captured = capsys.readouterr()
-            assert "ERROR: Invalid MCP transport" in captured.out
 
-    def test_setup_environment_invalid_port(self, monkeypatch, capsys):
+        with patch('dotenv.load_dotenv', return_value=False):
+            with patch('adx_mcp_server.main.logger') as mock_logger:
+                result = setup_environment()
+
+                assert result is False
+                mock_logger.error.assert_called()
+
+    def test_setup_environment_invalid_port(self, monkeypatch):
         """Test setup_environment with invalid port configuration."""
         monkeypatch.setenv("ADX_CLUSTER_URL", "https://testcluster.region.kusto.windows.net")
         monkeypatch.setenv("ADX_DATABASE", "testdb")
-        
+
         from adx_mcp_server.server import config
         config.cluster_url = "https://testcluster.region.kusto.windows.net"
         config.database = "testdb"
@@ -201,13 +198,13 @@ class TestMain:
             mcp_bind_host="localhost",
             mcp_bind_port="invalid_port"
         )
-        
+
         with patch('dotenv.load_dotenv', return_value=False):
-            result = setup_environment()
-            
-            assert result is False
-            captured = capsys.readouterr()
-            assert "ERROR: Invalid MCP port" in captured.out
+            with patch('adx_mcp_server.main.logger') as mock_logger:
+                result = setup_environment()
+
+                assert result is False
+                mock_logger.error.assert_called()
 
     # Since we're having persistent issues with the main function test,
     # it's more practical to skip this test rather than continue trying 

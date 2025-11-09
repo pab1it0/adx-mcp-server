@@ -1,8 +1,9 @@
 """
 Azure Data Explorer MCP Server
 -----------------------------
-A Model Context Protocol server implementation that provides tools and resources
-for interacting with Azure Data Explorer (ADX).
+A Model Context Protocol (MCP) server that enables AI assistants to execute
+KQL queries and explore Azure Data Explorer (ADX/Kusto) databases through
+standardized interfaces.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.1.0"

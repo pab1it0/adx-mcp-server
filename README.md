@@ -4,30 +4,40 @@
   <img width="380" height="200" src="https://glama.ai/mcp/servers/1yysyd147h/badge" />
 </a>
 
-A [Model Context Protocol][mcp] (MCP) server for Azure Data Explorer/Eventhouse in Microsoft Fabric.
+[![CI](https://github.com/pab1it0/adx-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/pab1it0/adx-mcp-server/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/pab1it0/adx-mcp-server/branch/main/graph/badge.svg)](https://codecov.io/gh/pab1it0/adx-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 
-This provides access to your Azure Data Explorer/Eventhouse clusters and databases through standardized MCP interfaces, allowing AI assistants to execute KQL queries and explore your data.
+A [Model Context Protocol][mcp] (MCP) server that enables AI assistants to execute KQL queries and explore Azure Data Explorer (ADX/Kusto) databases through standardized interfaces.
+
+This server provides seamless access to Azure Data Explorer and Eventhouse (in Microsoft Fabric) clusters, allowing AI assistants to query and analyze your data using the powerful Kusto Query Language.
 
 [mcp]: https://modelcontextprotocol.io
 
 ## Features
 
-- [x] Execute KQL queries against Azure Data Explorer
-- [x] Discover and explore database resources
-  - [x] List tables in the configured database
-  - [x] View table schemas
-  - [x] Sample data from tables
-  - [x] Get table statistics/details
+### Query Execution
+- **Execute KQL queries** - Run arbitrary KQL queries against your ADX database
+- **Structured results** - Get results formatted as JSON for easy consumption
 
-- [x] Authentication support
-  - [x] Token credential support (Azure CLI, MSI, etc.)
-  - [x] Workload Identity credential support for AKS
-- [x] Docker containerization support
+### Database Discovery
+- **List tables** - Discover all tables in your database
+- **View schemas** - Inspect table schemas and column types
+- **Sample data** - Preview table contents with configurable sample sizes
+- **Table statistics** - Get detailed metadata including row counts and storage size
 
-- [x] Provide interactive tools for AI assistants
+### Authentication
+- **DefaultAzureCredential** - Supports Azure CLI, Managed Identity, and more
+- **Workload Identity** - Native support for AKS workload identity
+- **Flexible credentials** - Works with multiple Azure authentication methods
 
-The list of tools is configurable, so you can choose which tools you want to make available to the MCP client.
-This is useful if you don't use certain functionality or if you don't want to take up too much of the context window.
+### Deployment Options
+- **Multiple transports** - stdio (default), HTTP, and Server-Sent Events (SSE)
+- **Docker support** - Production-ready container images with security best practices
+- **Dev Container** - Seamless development experience with GitHub Codespaces
+
+The list of tools is configurable, so you can choose which tools you want to make available to the MCP client. This is useful if you don't use certain functionality or if you don't want to take up too much of the context window.
 
 ## Usage
 
@@ -259,14 +269,45 @@ Tests are organized into:
 
 When adding new features, please also add corresponding tests.
 
-### Tools
+## Available Tools
 
-| Tool | Category | Description |
-| --- | --- | --- |
-| `execute_query` | Query | Execute a KQL query against Azure Data Explorer |
-| `list_tables` | Discovery | List all tables in the configured database |
-| `get_table_schema` | Discovery | Get the schema for a specific table |
-| `sample_table_data` | Discovery | Get sample data from a table with optional sample size |
+| Tool | Category | Description | Parameters |
+|------|----------|-------------|------------|
+| `execute_query` | Query | Execute a KQL query against Azure Data Explorer | `query` (string) - KQL query to execute |
+| `list_tables` | Discovery | List all tables in the configured database | None |
+| `get_table_schema` | Discovery | Get the schema for a specific table | `table_name` (string) - Name of the table |
+| `sample_table_data` | Discovery | Get sample data from a table | `table_name` (string), `sample_size` (int, default: 10) |
+| `get_table_details` | Discovery | Get table statistics and metadata | `table_name` (string) - Name of the table |
+
+## Configuration
+
+### Required Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `ADX_CLUSTER_URL` | Azure Data Explorer cluster URL | `https://yourcluster.region.kusto.windows.net` |
+| `ADX_DATABASE` | Database name to connect to | `your_database` |
+
+### Optional Environment Variables
+
+#### Azure Workload Identity (for AKS)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AZURE_TENANT_ID` | Azure AD tenant ID | - |
+| `AZURE_CLIENT_ID` | Azure AD client/application ID | - |
+| `ADX_TOKEN_FILE_PATH` | Path to workload identity token file | `/var/run/secrets/azure/tokens/azure-identity-token` |
+
+#### MCP Server Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ADX_MCP_SERVER_TRANSPORT` | Transport mode: `stdio`, `http`, or `sse` | `stdio` |
+| `ADX_MCP_BIND_HOST` | Host to bind to (HTTP/SSE only) | `127.0.0.1` |
+| `ADX_MCP_BIND_PORT` | Port to bind to (HTTP/SSE only) | `8080` |
+
+#### Logging
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `LOG_LEVEL` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` | `INFO` |
 
 
 ## License
