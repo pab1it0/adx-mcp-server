@@ -39,3 +39,4 @@ ENV/
 
 # Miscellaneous
 .DS_Store
+junit.xml
