@@ -1,16 +1,33 @@
 [project]
 name = "adx_mcp_server"
 version = "1.1.0"
-description = "MCP server for Azure Data Explorer integration"
+description = "MCP server for Azure Data Explorer (ADX/Kusto) integration enabling AI assistants to execute KQL queries and explore databases"
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.10"
+authors = [
+    { name = "pab1it0" }
+]
+keywords = ["mcp", "azure", "data-explorer", "kusto", "kql", "ai", "assistant"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
-    "mcp[cli]",
-    "azure-kusto-data",
-    "azure-identity",
-    "python-dotenv",
+    "mcp[cli]>=1.21.0",
+    "azure-kusto-data>=4.0.0",
+    "azure-identity>=1.12.0",
+    "python-dotenv>=1.0.0",
     "pyproject-toml>=0.1.0",
     "fastmcp>=2.11.3",
+    "structlog>=24.1.0",
 ]
 
 [project.optional-dependencies]
@@ -44,6 +61,9 @@ source = ["src/adx_mcp_server"]
 omit = ["*/__pycache__/*", "*/tests/*", "*/.venv/*", "*/venv/*"]
 
 [tool.coverage.report]
+fail_under = 50
+show_missing = true
+skip_covered = false
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
@@ -53,3 +73,6 @@ exclude_lines = [
     "pass",
     "raise ImportError"
 ]
+
+[tool.coverage.html]
+directory = "htmlcov"

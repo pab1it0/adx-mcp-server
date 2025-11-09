@@ -1,0 +1,94 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/2025-10-17/server.json",
+  "name": "io.github.pab1it0/adx-mcp-server",
+  "version": "1.1.0",
+  "description": "MCP server providing Azure Data Explorer (ADX/Kusto) query execution and database exploration capabilities for AI assistants",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pab1it0/adx-mcp-server.git"
+  },
+  "homepage": "https://github.com/pab1it0/adx-mcp-server",
+  "license": "MIT",
+  "author": {
+    "name": "pab1it0"
+  },
+  "runtime": {
+    "type": "docker",
+    "image": "ghcr.io/pab1it0/adx-mcp-server:1.1.0"
+  },
+  "transport": {
+    "type": "stdio"
+  },
+  "config": {
+    "required": {
+      "ADX_CLUSTER_URL": {
+        "type": "string",
+        "description": "Azure Data Explorer cluster URL (e.g., https://yourcluster.region.kusto.windows.net)"
+      },
+      "ADX_DATABASE": {
+        "type": "string",
+        "description": "Database name to connect to"
+      }
+    },
+    "optional": {
+      "AZURE_TENANT_ID": {
+        "type": "string",
+        "description": "Azure AD tenant ID for Workload Identity authentication"
+      },
+      "AZURE_CLIENT_ID": {
+        "type": "string",
+        "description": "Azure AD client/application ID for Workload Identity authentication"
+      },
+      "ADX_TOKEN_FILE_PATH": {
+        "type": "string",
+        "description": "Path to Azure Workload Identity token file (default: /var/run/secrets/azure/tokens/azure-identity-token)"
+      },
+      "ADX_MCP_SERVER_TRANSPORT": {
+        "type": "string",
+        "description": "Transport mode: stdio (default), http, or sse",
+        "default": "stdio"
+      },
+      "ADX_MCP_BIND_HOST": {
+        "type": "string",
+        "description": "Host to bind to for HTTP/SSE transports (default: 127.0.0.1)",
+        "default": "127.0.0.1"
+      },
+      "ADX_MCP_BIND_PORT": {
+        "type": "integer",
+        "description": "Port to bind to for HTTP/SSE transports (default: 8080)",
+        "default": 8080
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "execute_query",
+      "description": "Executes a Kusto Query Language (KQL) query against the configured Azure Data Explorer database",
+      "category": "query"
+    },
+    {
+      "name": "list_tables",
+      "description": "Retrieves a list of all tables available in the configured database",
+      "category": "discovery"
+    },
+    {
+      "name": "get_table_schema",
+      "description": "Retrieves the schema information for a specified table",
+      "category": "discovery"
+    },
+    {
+      "name": "sample_table_data",
+      "description": "Retrieves a random sample of rows from the specified table",
+      "category": "discovery"
+    },
+    {
+      "name": "get_table_details",
+      "description": "Retrieves table statistics and metadata including row count and size",
+      "category": "discovery"
+    }
+  ],
+  "capabilities": {
+    "supports_streaming": false,
+    "supports_cancellation": false
+  }
+}
