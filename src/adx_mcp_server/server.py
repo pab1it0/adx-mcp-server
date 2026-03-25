@@ -5,6 +5,7 @@ Main server implementation with KQL query execution and database exploration too
 """
 
 import os
+import re
 import sys
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
@@ -170,6 +171,31 @@ def format_query_results(result_set) -> List[Dict[str, Any]]:
         )
         raise
 
+_TABLE_NAME_PATTERN = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$')
+
+def validate_table_name(table_name: str) -> str:
+    """Validate a KQL table name to prevent injection attacks.
+
+    Allows simple identifiers (my_table) and dot-qualified names (database.table).
+    Rejects any characters that could enable KQL injection.
+    """
+    if not table_name or not table_name.strip():
+        raise ValueError("Table name cannot be empty")
+    table_name = table_name.strip()
+    if not _TABLE_NAME_PATTERN.match(table_name):
+        raise ValueError(
+            f"Invalid table name: '{table_name}'. "
+            "Table names must contain only letters, digits, underscores, "
+            "and dots (for qualified names like 'database.table')."
+        )
+    return table_name
+
+def validate_sample_size(sample_size: int) -> int:
+    """Validate sample_size is a positive integer."""
+    if not isinstance(sample_size, int) or sample_size <= 0:
+        raise ValueError(f"sample_size must be a positive integer, got: {sample_size}")
+    return sample_size
+
 @mcp.tool(description="Executes a Kusto Query Language (KQL) query against the configured Azure Data Explorer database and returns the results as a list of dictionaries.")
 async def execute_query(query: str) -> List[Dict[str, Any]]:
     """Execute a KQL query against the configured ADX database."""
@@ -217,6 +243,7 @@ async def list_tables() -> List[Dict[str, Any]]:
 @mcp.tool(description="Retrieves the schema information for a specified table in the Azure Data Explorer database, including column names, data types, and other schema-related metadata.")
 async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
     """Get schema information for a specific table."""
+    table_name = validate_table_name(table_name)
     logger.info("Getting table schema", table_name=table_name, database=config.database)
 
     if not config.cluster_url or not config.database:
@@ -237,6 +264,8 @@ async def get_table_schema(table_name: str) -> List[Dict[str, Any]]:
 @mcp.tool(description="Retrieves a random sample of rows from the specified table in the Azure Data Explorer database. The sample_size parameter controls how many rows to return (default: 10).")
 async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict[str, Any]]:
     """Get sample data from a table."""
+    table_name = validate_table_name(table_name)
+    sample_size = validate_sample_size(sample_size)
     logger.info("Sampling table data", table_name=table_name, sample_size=sample_size, database=config.database)
 
     if not config.cluster_url or not config.database:
@@ -257,6 +286,7 @@ async def sample_table_data(table_name: str, sample_size: int = 10) -> List[Dict
 @mcp.tool(description="Retrieves table details including TotalRowCount, HotExtentSize")
 async def get_table_details(table_name: str) -> List[Dict[str, Any]]:
     """Get detailed statistics and metadata for a table."""
+    table_name = validate_table_name(table_name)
     logger.info("Getting table details", table_name=table_name, database=config.database)
 
     if not config.cluster_url or not config.database:
