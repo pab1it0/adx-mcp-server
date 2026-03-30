@@ -39,6 +39,10 @@ This server provides seamless access to Azure Data Explorer and Eventhouse (in M
 
 The list of tools is configurable, so you can choose which tools you want to make available to the MCP client. This is useful if you don't use certain functionality or if you don't want to take up too much of the context window.
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/pab1it0-adx-mcp-server).
+
 ## Usage
 
 1. Login to your Azure account which has the permission to the ADX cluster using Azure CLI.
